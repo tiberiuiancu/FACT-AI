@@ -2,7 +2,6 @@ name: fact
 channels:
   - pytorch
   - defaults
-  - dglteam/label/th22_cpu
 dependencies:
   - python=3.12.8
   - pytorch=2.4.0
