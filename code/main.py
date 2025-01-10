@@ -31,7 +31,8 @@ parser.add_argument('--mode', type=str, default="uncertainty", choices=['uncerta
 
 parser.add_argument('--proxy', type=str, default='direct', choices=['direct','subgraph'], help='proxy method for simulating black-box attacks')
 
-parser.add_argument('--epochs', type=int, default=1000, help='number of epochs to train')
+parser.add_argument('--epochs', type=int, default=1000, help='number of epochs to train the victim model')
+parser.add_argument('--surrogate_epochs', type=int, default=500, help='number of epochs to train the surrogate model')
 parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
 parser.add_argument('--patience', type=int, default=50, help='early stop patience')
 parser.add_argument('--n_times', type=int, default=1, help='times to run')
