@@ -42,7 +42,7 @@ class Bayesian_Network(nn.Module):
                 result.append(y)
         return result
 
-    def optimize(self, g, lr):
+    def optimize(self, g, epochs, lr):
         self.train()
         optimizer = torch.optim.Adam(self.parameters(), lr=lr)
         loss_fn = nn.CrossEntropyLoss()
@@ -54,7 +54,7 @@ class Bayesian_Network(nn.Module):
         src, dst = g.edges()
         g.edata['edge_weight'] = degree[src] * degree[dst]
 
-        for epoch in range(500):
+        for epoch in range(epochs):
             output = self(g)
             loss = 0
             for y_hat in output:
@@ -207,7 +207,7 @@ class Attacker():
 
     def attack(self, g, index_split):
 
-        uncertainty = self.bayesian_network.optimize(g, self.args.lr)
+        uncertainty = self.bayesian_network.optimize(g, self.args.surrogate_epochs, self.args.lr)
         g = self.edge_attack.attack(g, uncertainty, self.args.ratio)
         g = self.feature_attack.optimize(g, index_split, self.args.epochs, self.args.lr, self.args.alpha, self.args.beta, self.args.loops)
         return g, uncertainty
