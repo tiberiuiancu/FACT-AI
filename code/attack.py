@@ -207,7 +207,7 @@ class Attacker():
 
     def attack(self, g, index_split):
 
-        uncertainty = self.bayesian_network.optimize(g, self.args.surrogate_epochs, self.args.lr)
+        uncertainty = self.bayesian_network.optimize(g, self.args.bn_epochs, self.args.lr)
         g = self.edge_attack.attack(g, uncertainty, self.args.ratio)
         g = self.feature_attack.optimize(g, index_split, self.args.epochs, self.args.lr, self.args.alpha, self.args.beta, self.args.loops)
         return g, uncertainty

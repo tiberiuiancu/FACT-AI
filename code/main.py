@@ -1,13 +1,4 @@
-import torch
-import numpy as np
 import argparse
-import tqdm
-import time
-
-from model import VictimModel
-from attack import *
-from utils import load_data
-from proxy import Direct, Subgraph
 
 parser = argparse.ArgumentParser(description="Fairness Attack Source code")
 
@@ -29,10 +20,12 @@ parser.add_argument('--loops', type=int, default=50)
 
 parser.add_argument('--mode', type=str, default="uncertainty", choices=['uncertainty','degree'], help='principle for selecting target nodes')
 
-parser.add_argument('--proxy', type=str, default='direct', choices=['direct','subgraph'], help='proxy method for simulating black-box attacks')
+parser.add_argument('--proxy', type=str, default='direct', choices=['direct','k_hops'], help='proxy method for simulating black-box attacks')
+parser.add_argument('--k_hops', type=int, default=2, help='number of hops to build the proxy subgraph')
+parser.add_argument('--root', type=int, help='start k-hops from this node instead of from the one with the highest degree')
 
 parser.add_argument('--epochs', type=int, default=1000, help='number of epochs to train the victim model')
-parser.add_argument('--surrogate_epochs', type=int, default=500, help='number of epochs to train the surrogate model')
+parser.add_argument('--bn_epochs', type=int, default=500, help='number of epochs to train the bayesian network')
 parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
 parser.add_argument('--patience', type=int, default=50, help='early stop patience')
 parser.add_argument('--n_times', type=int, default=1, help='times to run')
@@ -43,6 +36,16 @@ args = parser.parse_args()
 print(args)
 
 # -----------------------------------main------------------------------------------ 
+
+import torch
+import numpy as np
+import tqdm
+import time
+
+from model import VictimModel
+from attack import *
+from utils import load_data
+import proxy as prx
 
 device = torch.device("cuda", args.device) if torch.cuda.is_available() else torch.device("cpu")
 
@@ -72,21 +75,26 @@ for i in range(args.n_times):
             B_EO[model].append(eo)
 
     if args.proxy == 'direct':
-        proxy = Direct()
-    elif args.proxy == 'subgraph':
-        proxy = Subgraph()
-    else:
-        raise NotImplementedError
+        proxy = prx.Direct()
+    elif args.proxy == 'k_hops':
+        proxy = prx.KHops(args.k_hops, args.root)
 
     g_hat = proxy.approximate(g)
+
+    idx_train = torch.where(g_hat.ndata['train_index'])[0]
+    idx_val = torch.where(g_hat.ndata['val_index'])[0]
+    idx_test = torch.where(g_hat.ndata['test_index'])[0]
+    index_split_hat = {'train_index': idx_train,
+                       'val_index': idx_val,
+                       'test_index': idx_test}
     in_dim_hat = g_hat.ndata['feature'].shape[1]
     
     start_time = time.time()
     attacker = Attacker(g_hat, in_dim_hat, hid_dim, out_dim, device, args)
-    g_hat_attack, uncertainty_hat = attacker.attack(g_hat, index_split)  # uncertainty shape: [n_nodes]
+    g_hat_attack, uncertainty_hat = attacker.attack(g_hat, index_split_hat)  # uncertainty shape: [n_nodes]
     end_time = time.time()
     print(">> Finish attack, cost {:.4f}s.".format(end_time-start_time))
-    # save_graph(g_attack, index_split)
+    # save_graph(g_attack, index_split_hat)
     # import pdb; pdb.set_trace()
 
     g_attack, uncertainty = proxy.reconstruct(g_hat_attack, uncertainty_hat)
