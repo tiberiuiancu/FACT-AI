@@ -7,6 +7,7 @@ import time
 from model import VictimModel
 from attack import *
 from utils import load_data
+from proxy import Direct, Subgraph
 
 parser = argparse.ArgumentParser(description="Fairness Attack Source code")
 
@@ -28,6 +29,8 @@ parser.add_argument('--loops', type=int, default=50)
 
 parser.add_argument('--mode', type=str, default="uncertainty", choices=['uncertainty','degree'], help='principle for selecting target nodes')
 
+parser.add_argument('--proxy', type=str, default='direct', choices=['direct','subgraph'], help='proxy method for simulating black-box attacks')
+
 parser.add_argument('--epochs', type=int, default=1000, help='number of epochs to train')
 parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
 parser.add_argument('--patience', type=int, default=50, help='early stop patience')
@@ -40,7 +43,7 @@ print(args)
 
 # -----------------------------------main------------------------------------------ 
 
-device = torch.device("cuda", args.device)
+device = torch.device("cuda", args.device) if torch.cuda.is_available() else torch.device("cpu")
 
 if args.before:
     B_ACC = {model:[] for model in args.models}
@@ -66,16 +69,28 @@ for i in range(args.n_times):
             B_ACC[model].append(acc)
             B_SP[model].append(sp)
             B_EO[model].append(eo)
+
+    if args.proxy == 'direct':
+        proxy = Direct()
+    elif args.proxy == 'subgraph':
+        proxy = Subgraph()
+    else:
+        raise NotImplementedError
+
+    g_hat = proxy.approximate(g)
+    in_dim_hat = g_hat.ndata['feature'].shape[1]
     
     start_time = time.time()
-    attacker = Attacker(g, in_dim, hid_dim, out_dim, device, args)
-    g_attack, uncertainty = attacker.attack(g, index_split)  # uncertainty shape: [n_nodes]
+    attacker = Attacker(g_hat, in_dim_hat, hid_dim, out_dim, device, args)
+    g_hat_attack, uncertainty_hat = attacker.attack(g_hat, index_split)  # uncertainty shape: [n_nodes]
     end_time = time.time()
     print(">> Finish attack, cost {:.4f}s.".format(end_time-start_time))
     # save_graph(g_attack, index_split)
     # import pdb; pdb.set_trace()
 
-    dgl.save_graphs(f"./output/{args.dataset}_poisoned.bin", [g])
+    g_attack, uncertainty = proxy.reconstruct(g_hat_attack, uncertainty_hat)
+
+    dgl.save_graphs(f"./output/{args.dataset}_poisoned.bin", [g_attack])
 
     for model in args.models:
         victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model)
