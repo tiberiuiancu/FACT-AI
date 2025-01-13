@@ -1,11 +1,11 @@
-.PHONY: setup combine_csv nifa all
+.PHONY: setup combine_csv all nifa defense hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparameters
 
 DEVICE ?= 0
 
 setup:
 	mkdir -p output
 
-all: nifa
+all: nifa defense hyperparameters
 
 combine_csv:
 	@awk 'NR == 1 {print; next} FNR > 1' $(ARGS) > $(OUTPUT_CSV)
