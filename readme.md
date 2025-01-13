@@ -62,6 +62,7 @@ make all
 Below is an overview of the targets in the makefile, and their corresponding experiments:
 
 - `nifa`: Run the main experiment of the paper (produces Table 2: _Attack performance of NIFA on different victim GNN models_).
+- `defense`: Run the defense experiment of the paper (produces Figure 3: _Defense performance on Pokec-z with masking η training nodes with the highest uncertainty_).
 
 
 ## Licenses
