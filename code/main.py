@@ -9,7 +9,7 @@ from attack import *
 from utils import load_data
 from proxy import Direct, Subgraph
 
-parser = argparse.ArgumentParser(description="Fairness Attack Source code")
+parser = argparse.ArgumentParser(description='Fairness Attack Source code')
 
 parser.add_argument('--dataset', default='pokec_z', choices=['pokec_z','pokec_n','dblp'])
 
@@ -24,10 +24,10 @@ parser.add_argument('--defense', type=float, default=0, help='the ratio of defen
 
 parser.add_argument('--ratio', type=float, default=0.5, help='node of top ratio uncertainty are attacked')
 parser.add_argument('--before', action='store_true')
-parser.add_argument('--models', type=str, nargs="*", default=[])
+parser.add_argument('--models', type=str, nargs='*', default=[])
 parser.add_argument('--loops', type=int, default=50)
 
-parser.add_argument('--mode', type=str, default="uncertainty", choices=['uncertainty','degree'], help='principle for selecting target nodes')
+parser.add_argument('--mode', type=str, default='uncertainty', choices=['uncertainty','degree'], help='principle for selecting target nodes')
 
 parser.add_argument('--proxy', type=str, default='direct', choices=['direct','subgraph'], help='proxy method for simulating black-box attacks')
 
@@ -46,7 +46,7 @@ print(args)
 
 # -----------------------------------main------------------------------------------ 
 
-device = torch.device("cuda", args.device) if torch.cuda.is_available() else torch.device("cpu")
+device = torch.device('cuda', args.device) if torch.cuda.is_available() else torch.device('cpu')
 torch.manual_seed(args.seed)
 
 if args.before:
@@ -88,13 +88,13 @@ for i in range(args.n_times):
     attacker = Attacker(g_hat, in_dim_hat, hid_dim, out_dim, device, args)
     g_hat_attack, uncertainty_hat = attacker.attack(g_hat, index_split)  # uncertainty shape: [n_nodes]
     end_time = time.time()
-    print(">> Finish attack, cost {:.4f}s.".format(end_time-start_time))
+    print('>> Finish attack, cost {:.4f}s.'.format(end_time-start_time))
     # save_graph(g_attack, index_split)
     # import pdb; pdb.set_trace()
 
     g_attack, uncertainty = proxy.reconstruct(g_hat_attack, uncertainty_hat)
 
-    dgl.save_graphs(f"./output/{args.dataset}_poisoned.bin", [g_attack])
+    dgl.save_graphs(f'./output/{args.dataset}_poisoned.bin', [g_attack])
 
     for model in args.models:
         victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model)
@@ -104,17 +104,17 @@ for i in range(args.n_times):
         A_SP[model].append(sp)
         A_EO[model].append(eo)
 
-print("================Finished================")
+print('================Finished================')
 args_dict = vars(args)
 args_dict.pop('device')
 args_dict.pop('output_path')
 args_dict.pop('models')
 
 results = []
-str_format = lambda x, y: "{:.2f}±{:.2f}".format(x, y)
+str_format = lambda x, y: '{:.2f}±{:.2f}'.format(x, y)
 show_output = lambda x, y: print()
 for model in args.models:
-    print("\033[95m{}\033[0m".format(model))
+    print('\033[95m{}\033[0m'.format(model))
 
     curr = args_dict | {
         'model': model,
@@ -125,9 +125,9 @@ for model in args.models:
         'eo_mean': np.mean(A_EO[model])*100,
         'eo_std': np.std(A_EO[model])*100,
     }
-    print(">> acc:{}".format(str_format(curr['acc_mean'], curr['acc_std'])))
-    print(">> sp:{}".format(str_format(curr['sp_mean'], curr['sp_std'])))
-    print(">> eo:{}".format(str_format(curr['eo_mean'], curr['eo_std'])))
+    print('>> acc:{}'.format(str_format(curr['acc_mean'], curr['acc_std'])))
+    print('>> sp:{}'.format(str_format(curr['sp_mean'], curr['sp_std'])))
+    print('>> eo:{}'.format(str_format(curr['eo_mean'], curr['eo_std'])))
 
     if args.before:
         curr |= {
@@ -139,9 +139,9 @@ for model in args.models:
             'before_eo_std': np.std(B_EO[model])*100,
         }
 
-        print(">> before acc:".format(str_format(curr['before_acc_mean'], curr['before_acc_std'])))
-        print(">> before sp:{}".format(str_format(curr['before_sp_mean'], curr['before_sp_std'])))
-        print(">> before eo:{}".format(str_format(curr['before_eo_mean'], curr['before_eo_std'])))
+        print('>> before acc:'.format(str_format(curr['before_acc_mean'], curr['before_acc_std'])))
+        print('>> before sp:{}'.format(str_format(curr['before_sp_mean'], curr['before_sp_std'])))
+        print('>> before eo:{}'.format(str_format(curr['before_eo_mean'], curr['before_eo_std'])))
 
     results.append(curr)
 
