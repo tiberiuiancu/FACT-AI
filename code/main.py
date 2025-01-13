@@ -39,6 +39,7 @@ parser.add_argument('--n_times', type=int, default=1, help='times to run')
 
 parser.add_argument('--device', type=int, default=0, help='device ID for GPU')
 parser.add_argument('--seed', type=int, default=42, help='random seed for reproducibility')
+parser.add_argument('--output_path', type='str', help='if set, a csv output is produced at the specified path; the destination folder must exist')
 
 args = parser.parse_args()
 print(args)
@@ -104,14 +105,63 @@ for i in range(args.n_times):
         A_EO[model].append(eo)
 
 print("================Finished================")
-str_format = lambda x, y: "{:.2f}±{:.2f}".format(np.mean(x[y])*100, np.std(x[y])*100)
+args_dict = vars(args)
+args_dict.pop('device')
+args_dict.pop('output_path')
+args_dict.pop('models')
+
+results = []
+str_format = lambda x, y: "{:.2f}±{:.2f}".format(x, y)
+show_output = lambda x, y: print()
 for model in args.models:
     print("\033[95m{}\033[0m".format(model))
-    if args.before:
-        print(">> before acc:{}".format(str_format(B_ACC, model)))
-        print(">> before sp:{}".format(str_format(B_SP, model)))
-        print(">> before eo:{}".format(str_format(B_EO, model)))
-    print(">> after acc:{}".format(str_format(A_ACC, model)))
-    print(">> after sp:{}".format(str_format(A_SP, model)))
-    print(">> after eo:{}".format(str_format(A_EO, model)))
 
+    curr = args_dict | {
+        'model': model,
+        'acc_mean': np.mean(A_ACC[model])*100,
+        'acc_std': np.std(A_ACC[model])*100,
+        'sp_mean': np.mean(A_SP[model])*100,
+        'sp_std': np.std(A_SP[model])*100,
+        'eo_mean': np.mean(A_EO[model])*100,
+        'eo_std': np.std(A_EO[model])*100,
+    }
+    print(">> acc:{}".format(str_format(curr['acc_mean'], curr['acc_std'])))
+    print(">> sp:{}".format(str_format(curr['sp_mean'], curr['sp_std'])))
+    print(">> eo:{}".format(str_format(curr['eo_mean'], curr['eo_std'])))
+
+    if args.before:
+        curr |= {
+            'before_acc_mean': np.mean(B_ACC[model])*100,
+            'before_acc_std': np.std(B_ACC[model])*100,
+            'before_sp_mean': np.mean(B_SP[model])*100,
+            'before_sp_std': np.std(B_SP[model])*100,
+            'before_eo_mean': np.mean(B_EO[model])*100,
+            'before_eo_std': np.std(B_EO[model])*100,
+        }
+
+        print(">> before acc:".format(str_format(curr['before_acc_mean'], curr['before_acc_std'])))
+        print(">> before sp:{}".format(str_format(curr['before_sp_mean'], curr['before_sp_std'])))
+        print(">> before eo:{}".format(str_format(curr['before_eo_mean'], curr['before_eo_std'])))
+
+    results.append(curr)
+
+
+if args.output_path:
+    import pandas as pd
+    pd.DataFrame(results, columns=list(args_dict.keys()) + [
+        'model',
+        'before_acc_mean'
+        'before_acc_std'
+        'before_sp_mean'
+        'before_sp_std'
+        'before_eo_mean'
+        'before_eo_std',
+        'acc_mean'
+        'acc_std'
+        'sp_mean'
+        'sp_std'
+        'eo_mean'
+        'eo_std'
+    ]).to_csv(args.output_path)
+
+    print('Output written to', args.output_path)
