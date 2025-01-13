@@ -63,7 +63,11 @@ Below is an overview of the targets in the makefile, and their corresponding exp
 
 - `nifa`: Run the main experiment of the paper (produces Table 2: _Attack performance of NIFA on different victim GNN models_).
 - `defense`: Run the defense experiment of the paper (produces Figure 3: _Defense performance on Pokec-z with masking η training nodes with the highest uncertainty_).
-
+- `hyperparameters`: Runs the targets below and produces a file combinging all results. Note that each individual target below also produces its own output file.
+  - `hyperparameter_alpha`: Runs experiments on hyperparameter alpha (produces Figure A2).
+  - `hyperparameter_beta`: Runs experiments on hyperparameter beta (produces Figure A3).
+  - `hyperparameter_perturbation`: Runs experiments on node injection budget (produces Figure A4).
+  - `hyperparameter_k`: Runs experiments on hyperparameter k: uncertainty threshold (produces Figure A5).
 
 ## Licenses
 
