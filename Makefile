@@ -23,3 +23,19 @@ nifa: setup
 	@python main.py --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --before --device $(DEVICE) --mode 'degree' --output_path output/nifa_dblp.csv --models 'GCN' 'GraphSAGE' 'APPNP' 'SGC' 'FairGNN' 'FairVGNN' 'FairSIN'
 
 	$(MAKE) combine_csv ARGS='output/nifa_pokec_z.csv output/nifa_pokec_n.csv output/nifa_dblp.csv' OUTPUT_CSV=output/nifa.csv REMOVE_CSV=1
+
+
+defense: setup
+	@python main.py --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --before --device $(DEVICE) --models 'APPNP' --defense 0.1 --output_path output/defense_1.csv
+
+	@python main.py --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --before --device $(DEVICE) --models 'APPNP' --defense 0.2 --output_path output/defense_2.csv
+
+	@python main.py --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --before --device $(DEVICE) --models 'APPNP' --defense 0.3 --output_path output/defense_3.csv
+
+	@python main.py --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --before --device $(DEVICE) --models 'APPNP' --defense 0.4 --output_path output/defense_4.csv
+
+	@python main.py --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --before --device $(DEVICE) --models 'APPNP' --defense 0.5 --output_path output/defense_5.csv
+
+	@python main.py --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --before --device $(DEVICE) --models 'APPNP' --defense 0.6 --output_path output/defense_6.csv
+
+	$(MAKE) combine_csv ARGS='output/defense_1.csv output/defense_2.csv output/defense_3.csv output/defense_4.csv output/defense_5.csv output/defense_6.csv' OUTPUT_CSV=output/defense.csv REMOVE_CSV=1
