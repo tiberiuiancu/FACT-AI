@@ -18,4 +18,3 @@ dependencies:
   - numpy=2.2.1
   - pandas=2.2.3
   - tqdm=4.67.1
-  - pip=24.2
