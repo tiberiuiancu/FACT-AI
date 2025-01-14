@@ -6,7 +6,7 @@ def load_data(dataset):
     dataset = dataset.lower()
     assert dataset in ['pokec_z','pokec_n', 'dblp']
     
-    glist, _ = dgl.load_graphs(f'../data/{dataset}.bin')
+    glist, _ = dgl.load_graphs(f'data/{dataset}.bin')
     g = glist[0]
 
     idx_train = torch.where(g.ndata['train_index'])[0]
