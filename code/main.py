@@ -3,6 +3,7 @@ import numpy as np
 import argparse
 import tqdm
 import time
+from copy import deepcopy
 
 from model import VictimModel
 from attack import *
@@ -105,7 +106,7 @@ for i in range(args.n_times):
         A_EO[model].append(eo)
 
 print('================Finished================')
-args_dict = vars(args)
+args_dict = deepcopy(vars(args))
 args_dict.pop('device')
 args_dict.pop('output_path')
 args_dict.pop('models')
