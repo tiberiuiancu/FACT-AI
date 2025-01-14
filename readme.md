@@ -59,6 +59,15 @@ To run all experiments in the paper, you can run the following command:
 make all
 ```
 
+To select the device to run the experiments on, you can set the variable device.
+For example, to run the experiments on `cuda:0`, you can run:
+
+```
+make all DEVICE=0
+```
+
+If CUDA is not available, experiments will run on the CPU.
+
 Below is an overview of the targets in the makefile, and their corresponding experiments:
 
 - `nifa`: Run the main experiment of the paper (produces Table 2: _Attack performance of NIFA on different victim GNN models_).
