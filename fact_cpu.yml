@@ -3,6 +3,7 @@ channels:
   - dglteam/label/th24_cpu
   - pytorch
   - conda-forge
+  - anaconda
   - defaults
 dependencies:
   - python=3.12.8

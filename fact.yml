@@ -4,6 +4,7 @@ channels:
   - pytorch
   - nvidia
   - conda-forge
+  - anaconda
   - defaults
 dependencies:
   - python=3.12.8
