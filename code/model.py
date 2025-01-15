@@ -9,7 +9,7 @@ from utils import fair_matrix
 class VictimModel():
     def __init__(self, in_feats, h_feats, num_classes, device, name='GCN'):
         
-        assert name in ['GCN', 'SGC', 'APPNP', 'GraphSAGE'], "GNN model not implement"
+        assert name in ['GCN', 'SGC', 'APPNP', 'GraphSAGE', 'GAT'], "GNN model not implement"
         if name == 'GCN':
             self.model = GCN(in_feats, h_feats, num_classes)
         elif name == 'SGC':
@@ -18,6 +18,8 @@ class VictimModel():
             self.model = APPNP(in_feats, h_feats, num_classes)
         elif name == 'GraphSAGE':
             self.model = GraphSAGE(in_feats, h_feats, num_classes)
+        elif name == 'GAT':
+            self.model = GAT(in_feats, h_feats, num_classes)
 
         self.model.to(device)
 
@@ -160,4 +162,23 @@ class GraphSAGE(nn.Module):
         h = self.conv1(graph, inputs)
         h = F.relu(h)
         h = self.conv2(graph, h)
+        return h
+
+
+class GAT(nn.Module):
+    def __init__(self, in_feats, hid_feats, out_feats, num_heads=8):
+        super(GAT, self).__init__()
+        # First GAT layer
+        self.gat1 = dgl.nn.GATConv(in_feats, hid_feats, num_heads)
+        # Second GAT layer
+        self.gat2 = dgl.nn.GATConv(hid_feats * num_heads, out_feats, 1)  # Single output head
+
+    def forward(self, graph, inputs):
+        # Apply the first GAT layer
+        h = self.gat1(graph, inputs)
+        h = F.elu(h)  # Activation function
+        # Concatenate the heads from the first layer
+        h = h.flatten(1)
+        # Apply the second GAT layer
+        h = self.gat2(graph, h)
         return h

@@ -19,11 +19,11 @@ combine_csv:
 # The results are saved in the output folder at nifa.csv
 # todo: re-add FairGNN, FairVGNN, FairSIN
 nifa: setup
-	@python code/main.py --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --before --device $(DEVICE) --mode 'degree' --output_path $(OUT_DIR)/nifa_pokec_z.csv --models 'GCN' 'GraphSAGE' 'APPNP' 'SGC' #'FairGNN' 'FairVGNN' 'FairSIN'
+	@python code/main.py --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --before --device $(DEVICE) --mode 'degree' --output_path $(OUT_DIR)/nifa_pokec_z.csv --models 'GCN' 'GraphSAGE' 'APPNP' 'SGC' 'GAT' #'FairGNN' 'FairVGNN' 'FairSIN'
 
-	@python code/main.py --dataset pokec_n --alpha 0.01 --beta 4 --node 87 --edge 50 --before --device $(DEVICE) --mode 'degree' --output_path $(OUT_DIR)/nifa_pokec_n.csv --models 'GCN' 'GraphSAGE' 'APPNP' 'SGC' #'FairGNN' 'FairVGNN' 'FairSIN'
+	@python code/main.py --dataset pokec_n --alpha 0.01 --beta 4 --node 87 --edge 50 --before --device $(DEVICE) --mode 'degree' --output_path $(OUT_DIR)/nifa_pokec_n.csv --models 'GCN' 'GraphSAGE' 'APPNP' 'SGC' 'GAT'  #'FairGNN' 'FairVGNN' 'FairSIN'
 
-	@python code/main.py --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --before --device $(DEVICE) --mode 'degree' --output_path $(OUT_DIR)/nifa_dblp.csv --models 'GCN' 'GraphSAGE' 'APPNP' 'SGC' #'FairGNN' 'FairVGNN' 'FairSIN'
+	@python code/main.py --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --before --device $(DEVICE) --mode 'degree' --output_path $(OUT_DIR)/nifa_dblp.csv --models 'GCN' 'GraphSAGE' 'APPNP' 'SGC' 'GAT'  #'FairGNN' 'FairVGNN' 'FairSIN'
 
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/nifa_pokec_z.csv $(OUT_DIR)/nifa_pokec_n.csv $(OUT_DIR)/nifa_dblp.csv' OUTPUT_CSV=$(OUT_DIR)/nifa.csv REMOVE_CSV=1
 
