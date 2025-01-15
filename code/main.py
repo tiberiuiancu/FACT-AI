@@ -163,6 +163,6 @@ if args.output_path:
         'sp_std'
         'eo_mean'
         'eo_std'
-    ]).to_csv(args.output_path)
+    ]).to_csv(args.output_path, index=False)
 
     print('Output written to', args.output_path)
