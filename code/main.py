@@ -9,6 +9,7 @@ from model import VictimModel
 from attack import *
 from utils import load_data
 from proxy import Direct, Subgraph
+from utils import compute_heterogeneous_neighbors
 
 parser = argparse.ArgumentParser(description='Fairness Attack Source code')
 

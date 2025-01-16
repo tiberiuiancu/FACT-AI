@@ -1,6 +1,8 @@
 import torch
 import dgl
 import csv
+import scipy.sparse as sp
+from tqdm import tqdm
 
 def load_data(dataset):
     dataset = dataset.lower()
@@ -49,3 +51,40 @@ def fair_matrix(pred, label, sens, index):
             eo = (p_iy1.shape[0]/p_y1.shape[0]) - (p_iy0.shape[0]/p_y0.shape[0])
         EO.append(eo)   
     return SP, EO
+
+def compute_heterogeneous_neighbors(g, device):
+    """
+    Computes heterogeneous neighbors and corresponding features for a graph.
+    
+    Args:
+        g: DGLGraph with 'feature' and 'sensitive' node data.
+        device: Torch device (CPU or GPU).
+        
+    Returns:
+        h_X: Feature matrix of heterogeneous neighbors.
+        adj_norm_sp: Normalized adjacency matrix (sparse format).
+    """
+    # Normalize adjacency matrix (remove self-loops)
+    adj = g.adj(scipy_fmt="csr") - sp.eye(g.number_of_nodes())
+    new_adj = torch.zeros((adj.shape[0], adj.shape[0])).int()
+
+    # Compute heterogeneous neighbors
+    for i in tqdm(range(adj.shape[0]), desc="Computing heterogeneous neighbors"):
+        neighbors = torch.tensor(adj[i].nonzero()).to(device)
+        mask = (g.ndata['sensitive'][neighbors[1]] != g.ndata['sensitive'][i])
+        h_nei_idx = neighbors[1][mask]
+        new_adj[i, h_nei_idx] = 1
+
+    # Degree normalization and feature aggregation
+    deg = np.sum(new_adj.cpu().numpy(), axis=1)
+    deg = torch.from_numpy(deg).to(device)
+    indices = torch.nonzero(new_adj)
+    values = new_adj[indices[:, 0], indices[:, 1]]
+    adj_norm_sp = torch.sparse_coo_tensor(indices.t(), values, new_adj.shape).float().to(device)
+    h_X = torch.spmm(adj_norm_sp, g.ndata['feature']) / deg.unsqueeze(-1)
+
+    # Handle NaN values
+    mask = torch.any(torch.isnan(h_X), dim=1)
+    h_X = h_X[~mask].to(device)
+
+    return h_X, adj_norm_sp
