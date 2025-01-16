@@ -5,7 +5,7 @@ DEVICE ?= 0
 OUT_DIR ?= output
 
 setup:
-	mkdir -p $(OUT_DIR)
+	@mkdir -p $(OUT_DIR)
 
 all: nifa defense hyperparameters
 
