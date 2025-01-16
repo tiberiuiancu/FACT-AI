@@ -11,7 +11,7 @@ from utils import fair_matrix
 class VictimModel():
     def __init__(self, in_feats, h_feats, num_classes, device, name='GCN'):
         
-        assert name in ['GCN', 'SGC', 'APPNP', 'GraphSAGE', 'GAT'], "GNN model not implement"
+        assert name in ['GCN', 'SGC', 'APPNP', 'GraphSAGE', 'GAT', 'FairSIN'], "GNN model not implement"
         if name == 'GCN':
             self.model = GCN(in_feats, h_feats, num_classes)
         elif name == 'SGC':
@@ -22,10 +22,12 @@ class VictimModel():
             self.model = GraphSAGE(in_feats, h_feats, num_classes)
         elif name == 'GAT':
             self.model = GAT(in_feats, h_feats, num_classes)
+        elif name == 'FairSIN':
+            self.model = FairSIN(in_feats, h_feats, num_classes)
 
         self.model.to(device)
 
-    def optimize(self, g, index_split, epochs, lr, patience):
+    def optimize(self, g, index_split, epochs, lr, patience, h_X=None, adj_norm_sp=None):
         optimizer = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=0)
         loss_fn = nn.CrossEntropyLoss()
 
@@ -38,19 +40,25 @@ class VictimModel():
         best_val_acc = 0
         cnt = 0
         for epoch in range(epochs):
-            output = self.model(g, feature)
+            # FairSIN-specific logic
+            if h_X is not None and adj_norm_sp is not None:
+                output = self.model(g, feature, h_X=h_X)
+            else:
+                # Default logic for other models
+                output = self.model(g, feature)
+            
             pred = output.argmax(1)
-            val_acc = torch.eq(pred, label)[val_index].sum() / len(val_index)
-            test_acc = torch.eq(pred, label)[test_index].sum() / len(test_index)
+            val_acc = torch.eq(pred, label)[val_index].sum().item() / len(val_index)
+            test_acc = torch.eq(pred, label)[test_index].sum().item() / len(test_index)
 
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
                 best_model_state_dict = copy.deepcopy(self.model.state_dict())
                 cnt = 0
             else:
-                cnt += 1        
+                cnt += 1
             if cnt >= patience and epoch > 200:
-                break 
+                break
 
             loss = loss_fn(output[train_index], label[train_index])
             optimizer.zero_grad()
@@ -58,6 +66,7 @@ class VictimModel():
             optimizer.step()
 
         self.model.load_state_dict(best_model_state_dict)
+
 
     def re_optimize(self, g, uncertainty, index_split, epochs, lr, patience, defense):
         optimizer = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=0)
@@ -178,4 +187,54 @@ class GAT(nn.Module):
         h = h.flatten(1)
         h = self.gat2(graph, h)
         h = h.squeeze()
+        return h
+
+class FairSIN(nn.Module):
+    def __init__(self, in_feats, h_feats, num_classes, delta=4):
+        super(FairSIN, self).__init__()
+        self.encoder = GCN_encoder_spmm(num_features=in_feats, hidden_dim=h_feats)
+        self.classifier = nn.Linear(h_feats, num_classes)
+        self.delta = delta  # Neutralization weight
+
+    def forward(self, g, in_feat, h_X=None):
+        # Apply feature neutralization
+        h = self.encoder(in_feat + self.delta * h_X, g.adj_norm_sp)
+        out = self.classifier(h)
+        return out
+
+# original GCN encoder from FairSIN, for reference
+'''class GCN_encoder_spmm(torch.nn.Module):
+    def __init__(self, args):
+        super(GCN_encoder_spmm, self).__init__()
+
+        self.args = args
+
+        self.lin = Linear(args.num_features, args.hidden, bias=False)
+        self.bias = Parameter(torch.Tensor(args.hidden))
+
+    def reset_parameters(self):
+        self.lin.reset_parameters()
+        self.bias.data.fill_(0.0)
+
+    def forward(self, x, edge_index, adj_norm_sp):
+        h = self.lin(x)
+        h = torch.spmm(adj_norm_sp, h) + self.bias
+
+        return h'''
+
+# GCN encoder for FairSIN updated not to deal with args
+class GCN_encoder_spmm(nn.Module):
+    def __init__(self, num_features, hidden_dim):
+        super(GCN_encoder_spmm, self).__init__()
+        self.lin = nn.Linear(num_features, hidden_dim, bias=False)
+        self.bias = nn.Parameter(torch.Tensor(hidden_dim))
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        nn.init.xavier_uniform_(self.lin.weight)
+        self.bias.data.fill_(0.0)
+
+    def forward(self, x, adj_norm_sp):
+        h = self.lin(x)
+        h = torch.spmm(adj_norm_sp, h) + self.bias
         return h

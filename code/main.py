@@ -71,7 +71,36 @@ for i in range(args.n_times):
     if args.before:
         for model in args.models:
             victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model)
-            victim_model.optimize(g, index_split, args.epochs, args.lr, args.patience)
+            if model == 'FairSIN':
+                # Compute adjacency matrix and heterogeneous features for FairSIN
+                # Normalize adjacency matrix (remove self-loops)
+                adj = g.adj(scipy_fmt="csr") - sp.eye(g.number_of_nodes())
+                new_adj = torch.zeros((adj.shape[0], adj.shape[0])).int()
+
+                # Compute heterogeneous neighbors
+                for i in tqdm(range(adj.shape[0])):
+                    neighbors = torch.tensor(adj[i].nonzero()).to(device)
+                    mask = (g.ndata['sensitive'][neighbors[1]] != g.ndata['sensitive'][i])
+                    h_nei_idx = neighbors[1][mask]
+                    new_adj[i, h_nei_idx] = 1
+
+                # Degree normalization and feature aggregation
+                deg = np.sum(new_adj.numpy(), axis=1)
+                deg = torch.from_numpy(deg).to(device)
+                indices = torch.nonzero(new_adj)
+                values = new_adj[indices[:, 0], indices[:, 1]]
+                mat = torch.sparse_coo_tensor(indices.t(), values, new_adj.shape).float().to(device)
+                h_X = torch.spmm(mat, g.ndata['feature']) / deg.unsqueeze(-1)
+
+                # Handle NaN values
+                mask = torch.any(torch.isnan(h_X), dim=1)
+                h_X = h_X[~mask].to(device)
+
+                # Optimize FairSIN with additional matrices
+                victim_model.optimize(g, index_split, args.epochs, args.lr, args.patience, h_X, new_adj)
+            else:
+                # Default optimization for other models
+                victim_model.optimize(g, index_split, args.epochs, args.lr, args.patience)
             acc, sp, eo = victim_model.eval(g, index_split)
             B_ACC[model].append(acc)
             B_SP[model].append(sp)
