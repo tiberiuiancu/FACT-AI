@@ -2,7 +2,6 @@ import torch
 import dgl
 import csv
 import tqdm
-import sys
 
 def progress_bar(it, desc):
     return tqdm.tqdm(
