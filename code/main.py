@@ -9,8 +9,8 @@ parser.add_argument('--T', type=int, default=20, help='sampling times of Bayesia
 parser.add_argument('--theta', type=float, default=0.5, help='bernoulli parameter of Bayesian Network')
 parser.add_argument('--node', type=int, default=102, help='budget of injected nodes')
 parser.add_argument('--edge', type=int, default=50, help='budget of degrees')
-parser.add_argument('--alpha', type=float, default=1, help='weight of loss_cf')
-parser.add_argument('--beta', type=float, default=1, help='weight of loss_fair')
+parser.add_argument('--alpha', type=float, default=0.01, help='weight of loss_cf')
+parser.add_argument('--beta', type=float, default=4, help='weight of loss_fair')
 parser.add_argument('--defense', type=float, default=0, help='the ratio of defense')
 
 parser.add_argument('--ratio', type=float, default=0.5, help='node of top ratio uncertainty are attacked')
@@ -20,9 +20,10 @@ parser.add_argument('--loops', type=int, default=50)
 
 parser.add_argument('--mode', type=str, default="uncertainty", choices=['uncertainty','degree'], help='principle for selecting target nodes')
 
-parser.add_argument('--proxy', type=str, default='direct', choices=['direct','k_hops'], help='proxy method for simulating black-box attacks')
+parser.add_argument('--proxy', type=str, default='direct', choices=['direct','k_hops','pca','k_hops+pca'], help='proxy method for simulating black-box attacks')
 parser.add_argument('--k_hops', type=int, default=2, help='number of hops to build the proxy subgraph')
 parser.add_argument('--root', type=int, help='start k-hops from this node instead of from the one with the highest degree')
+parser.add_argument('--components', type=int, default=8, help='number of principal components to keep')
 
 parser.add_argument('--epochs', type=int, default=1000, help='number of epochs to train the victim model')
 parser.add_argument('--bn_epochs', type=int, default=500, help='number of epochs to train the bayesian network')
@@ -39,12 +40,11 @@ print(args)
 
 import torch
 import numpy as np
-import tqdm
 import time
 
 from model import VictimModel
 from attack import *
-from utils import load_data
+from utils import load_data, extract_index_split
 import proxy as prx
 
 device = torch.device("cuda", args.device) if torch.cuda.is_available() else torch.device("cpu")
@@ -78,24 +78,19 @@ for i in range(args.n_times):
         proxy = prx.Direct()
     elif args.proxy == 'k_hops':
         proxy = prx.KHops(args.k_hops, args.root)
+    elif args.proxy == 'pca':
+        proxy = prx.PCA(args.components)
+    elif args.proxy == 'k_hops+pca':
+        proxy = prx.Sequential(prx.KHops(args.k_hops, args.root),
+                               prx.PCA(args.components))
 
     g_hat = proxy.approximate(g)
 
-    idx_train = torch.where(g_hat.ndata['train_index'])[0]
-    idx_val = torch.where(g_hat.ndata['val_index'])[0]
-    idx_test = torch.where(g_hat.ndata['test_index'])[0]
-    index_split_hat = {'train_index': idx_train,
-                       'val_index': idx_val,
-                       'test_index': idx_test}
+    index_split_hat = extract_index_split(g_hat)
     in_dim_hat = g_hat.ndata['feature'].shape[1]
     
-    start_time = time.time()
     attacker = Attacker(g_hat, in_dim_hat, hid_dim, out_dim, device, args)
     g_hat_attack, uncertainty_hat = attacker.attack(g_hat, index_split_hat)  # uncertainty shape: [n_nodes]
-    end_time = time.time()
-    print(">> Finish attack, cost {:.4f}s.".format(end_time-start_time))
-    # save_graph(g_attack, index_split_hat)
-    # import pdb; pdb.set_trace()
 
     g_attack, uncertainty = proxy.reconstruct(g_hat_attack, uncertainty_hat)
 

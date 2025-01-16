@@ -1,6 +1,17 @@
 import torch
 import dgl
 import csv
+import tqdm
+import sys
+
+def progress_bar(it, desc):
+    return tqdm.tqdm(
+            it,
+            desc=f"{desc:>32}",
+            disable=None,
+            colour='red',
+            bar_format='{l_bar}{bar}| {n_fmt:>4}/{total_fmt:>4} [{elapsed}<{remaining}, ' '{rate_fmt}]',
+    )
 
 def load_data(dataset):
     dataset = dataset.lower()
@@ -9,17 +20,16 @@ def load_data(dataset):
     glist, _ = dgl.load_graphs(f'../data/{dataset}.bin')
     g = glist[0]
 
+    return g, extract_index_split(g)
+
+def extract_index_split(g):
     idx_train = torch.where(g.ndata['train_index'])[0]
     idx_val = torch.where(g.ndata['val_index'])[0]
     idx_test = torch.where(g.ndata['test_index'])[0]
-    # g.ndata.pop('train_index')
-    # g.ndata.pop('val_index')
-    # g.ndata.pop('test_index')
     index_split = {'train_index': idx_train,
-                    'val_index': idx_val,
-                    'test_index': idx_test}
-    return g, index_split
-
+                   'val_index': idx_val,
+                   'test_index': idx_test}
+    return index_split
 
 def fair_matrix(pred, label, sens, index):
 

@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import dgl
 import copy
 
-from utils import fair_matrix
+from utils import fair_matrix, progress_bar
 
 class VictimModel():
     def __init__(self, in_feats, h_feats, num_classes, device, name='GCN'):
@@ -33,7 +33,7 @@ class VictimModel():
 
         best_val_acc = 0
         cnt = 0
-        for epoch in range(epochs):
+        for epoch in progress_bar(range(epochs), "training victim model"):
             output = self.model(g, feature)
             pred = output.argmax(1)
             val_acc = torch.eq(pred, label)[val_index].sum() / len(val_index)
@@ -75,7 +75,7 @@ class VictimModel():
 
         best_val_acc = 0
         cnt = 0
-        for epoch in range(epochs):
+        for epoch in progress_bar(range(epochs), "training attacked victim model"):
             output = self.model(g, feature)
             pred = output.argmax(1)
             val_acc = torch.eq(pred, label)[val_index].sum() / len(val_index)
