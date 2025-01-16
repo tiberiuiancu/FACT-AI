@@ -177,4 +177,5 @@ class GAT(nn.Module):
         h = self.gat1(graph, inputs)
         h = h.flatten(1)
         h = self.gat2(graph, h)
+        h = h.squeeze()
         return h
