@@ -39,7 +39,7 @@ parser.add_argument('--patience', type=int, default=50, help='early stop patienc
 parser.add_argument('--n_times', type=int, default=1, help='times to run')
 
 parser.add_argument('--device', type=int, default=0, help='device ID for GPU')
-parser.add_argument('--seed', type=int, default=42, help='random seed for reproducibility')
+parser.add_argument('--seed', type=int, help='random seed for reproducibility')
 parser.add_argument('--output_path', type=str, help='if set, a csv output is produced at the specified path; the destination folder must exist')
 
 args = parser.parse_args()
@@ -48,7 +48,9 @@ print(args)
 # -----------------------------------main------------------------------------------ 
 
 device = torch.device('cuda', args.device) if torch.cuda.is_available() else torch.device('cpu')
-torch.manual_seed(args.seed)
+
+if args.seed is not None:
+    torch.manual_seed(args.seed)
 
 if args.before:
     B_ACC = {model:[] for model in args.models}
