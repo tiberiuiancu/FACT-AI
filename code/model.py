@@ -175,7 +175,6 @@ class GAT(nn.Module):
 
     def forward(self, graph, inputs):
         h = self.gat1(graph, inputs)
-        h = h.mean(1)
-        h = self.gat2(graph, h)
         h = h.flatten(1)
+        h = self.gat2(graph, h)
         return h
