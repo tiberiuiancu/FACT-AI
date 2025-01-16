@@ -4,6 +4,8 @@ import torch.nn.functional as F
 import dgl
 import copy
 
+from sympy.physics.units import action
+
 from utils import fair_matrix
 
 class VictimModel():
@@ -168,17 +170,12 @@ class GraphSAGE(nn.Module):
 class GAT(nn.Module):
     def __init__(self, in_feats, hid_feats, out_feats, num_heads=8):
         super(GAT, self).__init__()
-        # First GAT layer
-        self.gat1 = dgl.nn.GATConv(in_feats, hid_feats, num_heads)
-        # Second GAT layer
-        self.gat2 = dgl.nn.GATConv(hid_feats * num_heads, out_feats, 1)  # Single output head
+        self.gat1 = dgl.nn.GATConv(in_feats, hid_feats, num_heads, activation=F.elu)
+        self.gat2 = dgl.nn.GATConv(hid_feats * num_heads, out_feats, 1, activation=None)  # Single output head
 
     def forward(self, graph, inputs):
-        # Apply the first GAT layer
         h = self.gat1(graph, inputs)
-        h = F.elu(h)  # Activation function
-        # Concatenate the heads from the first layer
-        h = h.flatten(1)
-        # Apply the second GAT layer
+        h = h.mean(1)
         h = self.gat2(graph, h)
+        h = h.flatten(1)
         return h
