@@ -68,7 +68,7 @@ class VictimModel():
         self.model.load_state_dict(best_model_state_dict)
 
 
-    def re_optimize(self, g, uncertainty, index_split, epochs, lr, patience, defense):
+    def re_optimize(self, g, uncertainty, index_split, epochs, lr, patience, defense, h_X=None, adj_norm_sp=None):
         optimizer = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=0)
         loss_fn = nn.CrossEntropyLoss()
 
@@ -89,7 +89,12 @@ class VictimModel():
         best_val_acc = 0
         cnt = 0
         for epoch in range(epochs):
-            output = self.model(g, feature)
+            # FairSIN-specific logic
+            if h_X is not None and adj_norm_sp is not None:
+                output = self.model(g, feature, h_X=h_X)
+            else:
+                # Default logic for other models
+                output = self.model(g, feature)
             pred = output.argmax(1)
             val_acc = torch.eq(pred, label)[val_index].sum() / len(val_index)
             test_acc = torch.eq(pred, label)[test_index].sum() / len(test_index)

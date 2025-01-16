@@ -69,39 +69,21 @@ for i in range(args.n_times):
     out_dim = max(g.ndata['label']).item() + 1
     label = g.ndata['label']
 
+    # Initialize h_X and adj_norm_sp
+    h_X, adj_norm_sp = None, None
+
     if args.before:
         for model in args.models:
             victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model)
             if model == 'FairSIN':
-                # Compute adjacency matrix and heterogeneous features for FairSIN
-                # Normalize adjacency matrix (remove self-loops)
-                adj = g.adj(scipy_fmt="csr") - sp.eye(g.number_of_nodes())
-                new_adj = torch.zeros((adj.shape[0], adj.shape[0])).int()
-
-                # Compute heterogeneous neighbors
-                for i in tqdm(range(adj.shape[0])):
-                    neighbors = torch.tensor(adj[i].nonzero()).to(device)
-                    mask = (g.ndata['sensitive'][neighbors[1]] != g.ndata['sensitive'][i])
-                    h_nei_idx = neighbors[1][mask]
-                    new_adj[i, h_nei_idx] = 1
-
-                # Degree normalization and feature aggregation
-                deg = np.sum(new_adj.numpy(), axis=1)
-                deg = torch.from_numpy(deg).to(device)
-                indices = torch.nonzero(new_adj)
-                values = new_adj[indices[:, 0], indices[:, 1]]
-                mat = torch.sparse_coo_tensor(indices.t(), values, new_adj.shape).float().to(device)
-                h_X = torch.spmm(mat, g.ndata['feature']) / deg.unsqueeze(-1)
-
-                # Handle NaN values
-                mask = torch.any(torch.isnan(h_X), dim=1)
-                h_X = h_X[~mask].to(device)
-
+                # Compute heterogeneous neighbors and normalized adjacency matrix for FairSIN
+                h_X, adj_norm_sp = compute_heterogeneous_neighbors(g, device)
                 # Optimize FairSIN with additional matrices
-                victim_model.optimize(g, index_split, args.epochs, args.lr, args.patience, h_X, new_adj)
+                victim_model.optimize(g, index_split, args.epochs, args.lr, args.patience, h_X, adj_norm_sp)
             else:
                 # Default optimization for other models
                 victim_model.optimize(g, index_split, args.epochs, args.lr, args.patience)
+                
             acc, sp, eo = victim_model.eval(g, index_split)
             B_ACC[model].append(acc)
             B_SP[model].append(sp)
@@ -131,7 +113,16 @@ for i in range(args.n_times):
 
     for model in args.models:
         victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model)
-        victim_model.re_optimize(g_attack, uncertainty, index_split, args.epochs, args.lr, args.patience, args.defense)
+        if model == 'FairSIN':
+            # Check if h_X and adj_norm_sp are None
+            if h_X is None or adj_norm_sp is None:
+                # Compute heterogeneous neighbors and normalized adjacency matrix
+                h_X, adj_norm_sp = compute_heterogeneous_neighbors(g, device)
+            # Re-optimize FairSIN with additional matrices
+            victim_model.re_optimize(g_attack, uncertainty, index_split, args.epochs, args.lr, args.patience, args.defense, h_X, adj_norm_sp)
+        else:
+            # Default re-optimization for other models
+            victim_model.re_optimize(g_attack, uncertainty, index_split, args.epochs, args.lr, args.patience, args.defense)
         acc, sp, eo = victim_model.eval(g_attack, index_split)
         A_ACC[model].append(acc)
         A_SP[model].append(sp)
