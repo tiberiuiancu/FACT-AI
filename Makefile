@@ -140,23 +140,23 @@ hyperparam-k:
 
 hyperparam-d: setup
 	#pokec_z
-	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 10 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_1.csv
-	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 25 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_2.csv
-	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_3.csv
-	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 100 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_4.csv
-	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 150 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_5.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 10 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_1.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 25 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_2.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_3.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 100 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_4.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 150 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_5.csv
 	#pokec_n
-	@python code/main.py --seed 42 --dataset pokec_n --alpha 0.01 --beta 4 --node 87 --edge 10 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_6.csv
-	@python code/main.py --seed 42 --dataset pokec_n --alpha 0.01 --beta 4 --node 87 --edge 25 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_7.csv
-	@python code/main.py --seed 42 --dataset pokec_n --alpha 0.01 --beta 4 --node 87 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_8.csv
-	@python code/main.py --seed 42 --dataset pokec_n --alpha 0.01 --beta 4 --node 87 --edge 100 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_9.csv
-	@python code/main.py --seed 42 --dataset pokec_n --alpha 0.01 --beta 4 --node 87 --edge 150 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_10.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_n --alpha 0.01 --beta 4 --node 87 --edge 10 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_6.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_n --alpha 0.01 --beta 4 --node 87 --edge 25 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_7.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_n --alpha 0.01 --beta 4 --node 87 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_8.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_n --alpha 0.01 --beta 4 --node 87 --edge 100 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_9.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_n --alpha 0.01 --beta 4 --node 87 --edge 150 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_10.csv
 	#dblp
-	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --node 32 --edge 6 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_11.csv
-	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --node 32 --edge 12 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_12.csv
-	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --node 32 --edge 24 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_13.csv
-	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --node 32 --edge 48 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_14.csv
-	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --node 32 --edge 72 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_15.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 4 --node 32 --edge 6 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_11.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 4 --node 32 --edge 12 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_12.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 4 --node 32 --edge 24 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_13.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 4 --node 32 --edge 48 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_14.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 4 --node 32 --edge 72 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_15.csv
 	#combine
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparameters_d_1.csv $(OUT_DIR)/hyperparameters_d_2.csv $(OUT_DIR)/hyperparameters_d_3.csv $(OUT_DIR)/hyperparameters_d_4.csv $(OUT_DIR)/hyperparameters_d_5.csv $(OUT_DIR)/hyperparameters_d_6.csv $(OUT_DIR)/hyperparameters_d_7.csv $(OUT_DIR)/hyperparameters_d_8.csv $(OUT_DIR)/hyperparameters_d_9.csv $(OUT_DIR)/hyperparameters_d_10.csv $(OUT_DIR)/hyperparameters_d_11.csv $(OUT_DIR)/hyperparameters_d_12.csv $(OUT_DIR)/hyperparameters_d_13.csv $(OUT_DIR)/hyperparameters_d_14.csv $(OUT_DIR)/hyperparameters_d_15.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters_d.csv REMOVE_CSV=1
 
