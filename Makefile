@@ -120,20 +120,20 @@ hyperparam-perturbation: setup
 # produces Figure A5
 hyperparam-k:
 	#pokec_z
-	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --ratio 0.1 --node 102 --edge 25 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_1.csv
+	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --ratio 0.1 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_1.csv
 	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --ratio 0.25 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_2.csv
-	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --ratio 0.5 --node 102 --edge 100 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_3.csv
-	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --ratio 0.75 --node 102 --edge 150 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_4.csv
+	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --ratio 0.5 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_3.csv
+	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --ratio 0.75 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_4.csv
 	#pokec_n
-	@python code/main.py --seed 42 --dataset pokec_n --alpha 0.01 --beta 4 --ratio 0.1 --node 87 --edge 21 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_5.csv
+	@python code/main.py --seed 42 --dataset pokec_n --alpha 0.01 --beta 4 --ratio 0.1 --node 87 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_5.csv
 	@python code/main.py --seed 42 --dataset pokec_n --alpha 0.01 --beta 4 --ratio 0.25 --node 87 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_6.csv
-	@python code/main.py --seed 42 --dataset pokec_n --alpha 0.01 --beta 4 --ratio 0.5 --node 87 --edge 100 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_7.csv
-	@python code/main.py --seed 42 --dataset pokec_n --alpha 0.01 --beta 4 --ratio 0.75 --node 87 --edge 150 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_8.csv
+	@python code/main.py --seed 42 --dataset pokec_n --alpha 0.01 --beta 4 --ratio 0.5 --node 87 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_7.csv
+	@python code/main.py --seed 42 --dataset pokec_n --alpha 0.01 --beta 4 --ratio 0.75 --node 87 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_8.csv
 	#dblp
-	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --ratio 0.1 --node 32 --edge 6 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_9.csv
-	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --ratio 0.25 --node 32 --edge 15 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_10.csv
-	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --ratio 0.5 --node 32 --edge 30 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_11.csv
-	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --ratio 0.75 --node 32 --edge 45 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_12.csv
+	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --ratio 0.1 --node 32 --edge 24 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_9.csv
+	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --ratio 0.25 --node 32 --edge 24 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_10.csv
+	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --ratio 0.5 --node 32 --edge 24 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_11.csv
+	@python code/main.py --seed 42 --dataset dblp --alpha 0.1 --beta 4 --ratio 0.75 --node 32 --edge 24 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_12.csv
 	# combine
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparameters_k_1.csv $(OUT_DIR)/hyperparameters_k_2.csv $(OUT_DIR)/hyperparameters_k_3.csv $(OUT_DIR)/hyperparameters_k_4.csv $(OUT_DIR)/hyperparameters_k_5.csv $(OUT_DIR)/hyperparameters_k_6.csv $(OUT_DIR)/hyperparameters_k_7.csv $(OUT_DIR)/hyperparameters_k_8.csv $(OUT_DIR)/hyperparameters_k_9.csv $(OUT_DIR)/hyperparameters_k_10.csv $(OUT_DIR)/hyperparameters_k_11.csv $(OUT_DIR)/hyperparameters_k_12.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters_k.csv REMOVE_CSV=1
 
