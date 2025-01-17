@@ -138,7 +138,7 @@ hyperparam-k:
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparameters_k_1.csv $(OUT_DIR)/hyperparameters_k_2.csv $(OUT_DIR)/hyperparameters_k_3.csv $(OUT_DIR)/hyperparameters_k_4.csv $(OUT_DIR)/hyperparameters_k_5.csv $(OUT_DIR)/hyperparameters_k_6.csv $(OUT_DIR)/hyperparameters_k_7.csv $(OUT_DIR)/hyperparameters_k_8.csv $(OUT_DIR)/hyperparameters_k_9.csv $(OUT_DIR)/hyperparameters_k_10.csv $(OUT_DIR)/hyperparameters_k_11.csv $(OUT_DIR)/hyperparameters_k_12.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters_k.csv REMOVE_CSV=1
 
 
-hyperparam-d:
+hyperparam-d: setup
 	#pokec_z
 	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 10 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_1.csv
 	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 25 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_d_2.csv
