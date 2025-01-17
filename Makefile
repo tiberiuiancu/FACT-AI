@@ -161,5 +161,5 @@ hyperparam-d:
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparameters_d_1.csv $(OUT_DIR)/hyperparameters_d_2.csv $(OUT_DIR)/hyperparameters_d_3.csv $(OUT_DIR)/hyperparameters_d_4.csv $(OUT_DIR)/hyperparameters_d_5.csv $(OUT_DIR)/hyperparameters_d_6.csv $(OUT_DIR)/hyperparameters_d_7.csv $(OUT_DIR)/hyperparameters_d_8.csv $(OUT_DIR)/hyperparameters_d_9.csv $(OUT_DIR)/hyperparameters_d_10.csv $(OUT_DIR)/hyperparameters_d_11.csv $(OUT_DIR)/hyperparameters_d_12.csv $(OUT_DIR)/hyperparameters_d_13.csv $(OUT_DIR)/hyperparameters_d_14.csv $(OUT_DIR)/hyperparameters_d_15.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters_d.csv REMOVE_CSV=1
 
 
-hyperparameters: hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k
+hyperparameters: hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparameters_alpha.csv $(OUT_DIR)/hyperparameters_beta.csv $(OUT_DIR)/hyperparameters_perturbation.csv $(OUT_DIR)/hyperparameters_k.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters.csv REMOVE_CSV=0
