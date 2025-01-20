@@ -43,6 +43,7 @@ print(args)
 import torch
 import numpy as np
 import time
+from copy import deepcopy
 
 from model import VictimModel
 from attack import *
