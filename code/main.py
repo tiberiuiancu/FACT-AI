@@ -1,6 +1,6 @@
 import argparse
 
-parser = argparse.ArgumentParser(description="Fairness Attack Source code")
+parser = argparse.ArgumentParser(description='Fairness Attack Source code')
 
 parser.add_argument('--dataset', default='pokec_z', choices=['pokec_z','pokec_n','dblp'])
 
@@ -15,10 +15,10 @@ parser.add_argument('--defense', type=float, default=0, help='the ratio of defen
 
 parser.add_argument('--ratio', type=float, default=0.5, help='node of top ratio uncertainty are attacked')
 parser.add_argument('--before', action='store_true')
-parser.add_argument('--models', type=str, nargs="*", default=[])
+parser.add_argument('--models', type=str, nargs='*', default=[])
 parser.add_argument('--loops', type=int, default=50)
 
-parser.add_argument('--mode', type=str, default="uncertainty", choices=['uncertainty','degree'], help='principle for selecting target nodes')
+parser.add_argument('--mode', type=str, default='uncertainty', choices=['uncertainty','degree'], help='principle for selecting target nodes')
 
 parser.add_argument('--proxy', type=str, default='direct', choices=['direct','k_hops','pca','k_hops+pca'], help='proxy method for simulating black-box attacks')
 parser.add_argument('--k_hops', type=int, default=2, help='number of hops to build the proxy subgraph')
@@ -32,6 +32,8 @@ parser.add_argument('--patience', type=int, default=50, help='early stop patienc
 parser.add_argument('--n_times', type=int, default=1, help='times to run')
 
 parser.add_argument('--device', type=int, default=0, help='device ID for GPU')
+parser.add_argument('--seed', type=int, help='random seed for reproducibility')
+parser.add_argument('--output_path', type=str, help='if set, a csv output is produced at the specified path; the destination folder must exist')
 
 args = parser.parse_args()
 print(args)
@@ -48,6 +50,9 @@ from utils import load_data, extract_index_split
 import proxy as prx
 
 device = torch.device("cuda", args.device) if torch.cuda.is_available() else torch.device("cpu")
+
+if args.seed is not None:
+    torch.manual_seed(args.seed)
 
 if args.before:
     B_ACC = {model:[] for model in args.models}
@@ -94,7 +99,7 @@ for i in range(args.n_times):
 
     g_attack, uncertainty = proxy.reconstruct(g_hat_attack, uncertainty_hat)
 
-    dgl.save_graphs(f"./output/{args.dataset}_poisoned.bin", [g_attack])
+    dgl.save_graphs(f'./output/{args.dataset}_poisoned.bin', [g_attack])
 
     for model in args.models:
         victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model)
@@ -104,15 +109,64 @@ for i in range(args.n_times):
         A_SP[model].append(sp)
         A_EO[model].append(eo)
 
-print("================Finished================")
-str_format = lambda x, y: "{:.2f}±{:.2f}".format(np.mean(x[y])*100, np.std(x[y])*100)
-for model in args.models:
-    print("\033[95m{}\033[0m".format(model))
-    if args.before:
-        print(">> before acc:{}".format(str_format(B_ACC, model)))
-        print(">> before sp:{}".format(str_format(B_SP, model)))
-        print(">> before eo:{}".format(str_format(B_EO, model)))
-    print(">> after acc:{}".format(str_format(A_ACC, model)))
-    print(">> after sp:{}".format(str_format(A_SP, model)))
-    print(">> after eo:{}".format(str_format(A_EO, model)))
+print('================Finished================')
+args_dict = deepcopy(vars(args))
+args_dict.pop('device')
+args_dict.pop('output_path')
+args_dict.pop('models')
 
+results = []
+str_format = lambda x, y: '{:.2f}±{:.2f}'.format(x, y)
+show_output = lambda x, y: print()
+for model in args.models:
+    print('\033[95m{}\033[0m'.format(model))
+
+    curr = args_dict | {
+        'model': model,
+        'acc_mean': np.mean(A_ACC[model])*100,
+        'acc_std': np.std(A_ACC[model])*100,
+        'sp_mean': np.mean(A_SP[model])*100,
+        'sp_std': np.std(A_SP[model])*100,
+        'eo_mean': np.mean(A_EO[model])*100,
+        'eo_std': np.std(A_EO[model])*100,
+    }
+    print('>> acc:{}'.format(str_format(curr['acc_mean'], curr['acc_std'])))
+    print('>> sp:{}'.format(str_format(curr['sp_mean'], curr['sp_std'])))
+    print('>> eo:{}'.format(str_format(curr['eo_mean'], curr['eo_std'])))
+
+    if args.before:
+        curr |= {
+            'before_acc_mean': np.mean(B_ACC[model])*100,
+            'before_acc_std': np.std(B_ACC[model])*100,
+            'before_sp_mean': np.mean(B_SP[model])*100,
+            'before_sp_std': np.std(B_SP[model])*100,
+            'before_eo_mean': np.mean(B_EO[model])*100,
+            'before_eo_std': np.std(B_EO[model])*100,
+        }
+
+        print('>> before acc:'.format(str_format(curr['before_acc_mean'], curr['before_acc_std'])))
+        print('>> before sp:{}'.format(str_format(curr['before_sp_mean'], curr['before_sp_std'])))
+        print('>> before eo:{}'.format(str_format(curr['before_eo_mean'], curr['before_eo_std'])))
+
+    results.append(curr)
+
+
+if args.output_path:
+    import pandas as pd
+    pd.DataFrame(results, columns=list(args_dict.keys()) + [
+        'model',
+        'before_acc_mean'
+        'before_acc_std'
+        'before_sp_mean'
+        'before_sp_std'
+        'before_eo_mean'
+        'before_eo_std',
+        'acc_mean'
+        'acc_std'
+        'sp_mean'
+        'sp_std'
+        'eo_mean'
+        'eo_std'
+    ]).to_csv(args.output_path, index=False)
+
+    print('Output written to', args.output_path)
