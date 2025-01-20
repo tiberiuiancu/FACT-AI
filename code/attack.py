@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import dgl
 import dgl.function as fn
 from model import *
-from utils import fair_matrix
+from utils import fair_matrix, progress_bar
 import random
 
 class Bayesian_Network(nn.Module):
@@ -54,7 +54,7 @@ class Bayesian_Network(nn.Module):
         src, dst = g.edges()
         g.edata['edge_weight'] = degree[src] * degree[dst]
 
-        for epoch in range(epochs):
+        for epoch in progress_bar(range(epochs), desc="training bayesian network"):
             output = self(g)
             loss = 0
             for y_hat in output:
@@ -119,6 +119,9 @@ class Edge_Attack():
         g.add_edges(src, dst)
         g.add_edges(dst, src)
 
+        loopback = torch.arange(N-self.node, N, device=g.device)
+        g.add_edges(loopback, loopback)
+
         return g
 
 
@@ -152,7 +155,7 @@ class Feature_Attack(nn.Module):
         optimizer_F = torch.optim.Adam([self.feature], lr=lr, weight_decay=0)
         cross_entropy = nn.CrossEntropyLoss()
 
-        for rounds in range(0, epochs, loops):
+        for rounds in progress_bar(range(0, epochs, loops), "training feature attack"):
             for epoch in range(rounds, rounds+loops):
                 output = self(g)
                 loss_W = cross_entropy(output[train_index], label[train_index])
@@ -207,7 +210,7 @@ class Attacker():
 
     def attack(self, g, index_split):
 
-        uncertainty = self.bayesian_network.optimize(g, self.args.surrogate_epochs, self.args.lr)
+        uncertainty = self.bayesian_network.optimize(g, self.args.bn_epochs, self.args.lr)
         g = self.edge_attack.attack(g, uncertainty, self.args.ratio)
         g = self.feature_attack.optimize(g, index_split, self.args.epochs, self.args.lr, self.args.alpha, self.args.beta, self.args.loops)
         return g, uncertainty
