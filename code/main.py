@@ -156,18 +156,18 @@ if args.output_path:
     import pandas as pd
     pd.DataFrame(results, columns=list(args_dict.keys()) + [
         'model',
-        'before_acc_mean'
-        'before_acc_std'
-        'before_sp_mean'
-        'before_sp_std'
-        'before_eo_mean'
+        'before_acc_mean',
+        'before_acc_std',
+        'before_sp_mean',
+        'before_sp_std',
+        'before_eo_mean',
         'before_eo_std',
-        'acc_mean'
-        'acc_std'
-        'sp_mean'
-        'sp_std'
-        'eo_mean'
-        'eo_std'
+        'acc_mean',
+        'acc_std',
+        'sp_mean',
+        'sp_std',
+        'eo_mean',
+        'eo_std',
     ]).to_csv(args.output_path, index=False)
 
     print('Output written to', args.output_path)
