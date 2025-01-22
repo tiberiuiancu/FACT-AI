@@ -163,3 +163,13 @@ hyperparam-d: setup
 
 hyperparameters: hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparameters_alpha.csv $(OUT_DIR)/hyperparameters_beta.csv $(OUT_DIR)/hyperparameters_perturbation.csv $(OUT_DIR)/hyperparameters_k.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters.csv REMOVE_CSV=0
+
+parameter-scaling:
+	@python code/main.py --hdim 16 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_1.csv
+	@python code/main.py --hdim 32 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_2.csv
+	@python code/main.py --hdim 63 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_3.csv
+	@python code/main.py --hdim 128 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_4.csv
+	@python code/main.py --hdim 256 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_5.csv
+	@python code/main.py --hdim 512 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_6.csv
+	@python code/main.py --hdim 1024 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_7.csv
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/parameter_scaling_1.csv $(OUT_DIR)/parameter_scaling_2.csv $(OUT_DIR)/parameter_scaling_3.csv $(OUT_DIR)/parameter_scaling_4.csv $(OUT_DIR)/parameter_scaling_5.csv $(OUT_DIR)/parameter_scaling_6.csv $(OUT_DIR)/parameter_scaling_7.csv' OUTPUT_CSV=$(OUT_DIR)/parameter_scaling.csv REMOVE_CSV=1
