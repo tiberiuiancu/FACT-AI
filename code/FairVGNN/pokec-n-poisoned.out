@@ -1,0 +1,44 @@
+============================================================================================== 
+Warning! Mixing Conda and module environments may lead to corruption of the
+user environment. 
+We do not recommend users mixing those two environments unless absolutely
+necessary. Note that 
+SURF does not provide any support for Conda environment.
+For more information, please refer to our software policy page:
+https://servicedesk.surf.nl/wiki/display/WIKI/Software+policy+Snellius#SoftwarepolicySnellius-UseofAnacondaandMinicondaenvironmentsonSnellius 
+
+Remember that many packages have already been installed on the system and can
+be loaded using 
+the 'module load <package__name>' command. If you are uncertain if a package is
+already available 
+on the system, please use 'module avail' or 'module spider' to search for it.
+============================================================================================== 
+***********************POKEC-N***********************
+==========GCN-spmm==========
+features: torch.Size([66656, 265])
+tensor(4287) tensor(4510)
+tensor(2141) tensor(2257)
+tensor(1084) tensor(1115)
+tensor(1062) tensor(1138)
+tensor([1.0000, 1.0286, 1.0000,  ..., 1.0286, 1.0000, 1.0286]) tensor([0., 1., 0.,  ..., 1., 0., 1.])
+  0%|          | 0/5 [00:00<?, ?run/s] 20%|██        | 1/5 [03:24<13:39, 204.83s/run] 40%|████      | 2/5 [06:48<10:12, 204.31s/run] 60%|██████    | 3/5 [10:12<06:48, 204.13s/run] 80%|████████  | 4/5 [13:36<03:24, 204.07s/run]100%|██████████| 5/5 [17:00<00:00, 204.11s/run]100%|██████████| 5/5 [17:00<00:00, 204.17s/run]
+======pokec_n_poisonedGCN======
+auc_roc: 71.74288986195096 0.776672572650323
+Acc: 68.17272727272726 0.5089285455373962
+f1: 59.93123653741529 1.7195164871929778
+parity: 3.058314213383312 1.4809793175982304
+equality: 4.158336155547144 2.866477022354778
+
+JOB STATISTICS
+==============
+Job ID: 9532586
+Cluster: snellius
+User/Group: tiancu/tiancu
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 18
+CPU Utilized: 00:17:37
+CPU Efficiency: 5.47% of 05:21:54 core-walltime
+Job Wall-clock time: 00:17:53
+Memory Utilized: 1016.32 MB
+Memory Efficiency: 0.83% of 120.00 GB
