@@ -27,6 +27,7 @@ parser.add_argument('--components', type=int, default=8, help='number of princip
 
 parser.add_argument('--epochs', type=int, default=1000, help='number of epochs to train the victim model')
 parser.add_argument('--bn_epochs', type=int, default=500, help='number of epochs to train the bayesian network')
+parser.add_argument('--surrogate', type=str, default='GCN', choices=['GCN','GAT'], help='surrogate model architecture for feature attack')
 parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
 parser.add_argument('--patience', type=int, default=50, help='early stop patience')
 parser.add_argument('--n_times', type=int, default=1, help='times to run')

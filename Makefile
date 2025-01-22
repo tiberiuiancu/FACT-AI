@@ -173,3 +173,8 @@ parameter-scaling: setup
 	@python code/main.py --hid_dim 512 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_6.csv
 	@python code/main.py --hid_dim 1024 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_7.csv
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/parameter_scaling_1.csv $(OUT_DIR)/parameter_scaling_2.csv $(OUT_DIR)/parameter_scaling_3.csv $(OUT_DIR)/parameter_scaling_4.csv $(OUT_DIR)/parameter_scaling_5.csv $(OUT_DIR)/parameter_scaling_6.csv $(OUT_DIR)/parameter_scaling_7.csv' OUTPUT_CSV=$(OUT_DIR)/parameter_scaling.csv REMOVE_CSV=1
+
+surrogate: setup
+	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' 'GCN' --surrogate 'GCN' --output_path $(OUT_DIR)/surrogate_1.csv
+	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' 'GCN' --surrogate 'GAT' --output_path $(OUT_DIR)/surrogate_2.csv
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/surrogate_1.csv $(OUT_DIR)/surrogate_2.csv' OUTPUT_CSV=$(OUT_DIR)/surrogate.csv REMOVE_CSV=1
