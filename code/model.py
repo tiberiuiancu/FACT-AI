@@ -170,8 +170,8 @@ class GraphSAGE(nn.Module):
 class GAT(nn.Module):
     def __init__(self, in_feats, hid_feats, out_feats, num_heads=8):
         super(GAT, self).__init__()
-        self.gat1 = dgl.nn.GATConv(in_feats, hid_feats, num_heads, activation=F.elu)
-        self.gat2 = dgl.nn.GATConv(hid_feats * num_heads, out_feats, 1, activation=None)  # Single output head
+        self.gat1 = dgl.nn.GATConv(in_feats, hid_feats // num_heads, num_heads, activation=F.elu)
+        self.gat2 = dgl.nn.GATConv(hid_feats, out_feats, 1, activation=None)  # Single output head
 
     def forward(self, graph, inputs):
         h = self.gat1(graph, inputs)
