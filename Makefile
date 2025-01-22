@@ -178,3 +178,8 @@ surrogate: setup
 	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' 'GCN' --surrogate 'GCN' --output_path $(OUT_DIR)/surrogate_1.csv
 	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' 'GCN' --surrogate 'GAT' --output_path $(OUT_DIR)/surrogate_2.csv
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/surrogate_1.csv $(OUT_DIR)/surrogate_2.csv' OUTPUT_CSV=$(OUT_DIR)/surrogate.csv REMOVE_CSV=1
+
+gat-node-selection-mode: setup
+	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --mode 'uncertainty' --output_path $(OUT_DIR)/gat_node_selection_mode_1.csv
+	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --mode 'degree' --output_path $(OUT_DIR)/gat_node_selection_mode_2.csv
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/gat_node_selection_mode_1.csv $(OUT_DIR)/gat_node_selection_mode_2.csv' OUTPUT_CSV=$(OUT_DIR)/gat_node_selection_mode.csv REMOVE_CSV=1
