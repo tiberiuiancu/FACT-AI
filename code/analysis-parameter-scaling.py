@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv('parameter-scaling.csv')
+df = pd.read_csv('output/parameter-scaling.csv')
 df = df[['model', 'hid_dim', 'sp_mean', 'eo_mean']]
 df['unfairness'] = df['sp_mean'] + df['eo_mean']
 
