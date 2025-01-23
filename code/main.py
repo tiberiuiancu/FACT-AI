@@ -16,6 +16,7 @@ parser.add_argument('--defense', type=float, default=0, help='the ratio of defen
 parser.add_argument('--ratio', type=float, default=0.5, help='node of top ratio uncertainty are attacked')
 parser.add_argument('--before', action='store_true')
 parser.add_argument('--models', type=str, nargs='*', default=[])
+parser.add_argument('--att_heads', type=int, default=8, help='number of attention heads')
 parser.add_argument('--loops', type=int, default=50)
 
 parser.add_argument('--mode', type=str, default='uncertainty', choices=['uncertainty','degree'], help='principle for selecting target nodes')
@@ -74,7 +75,7 @@ for i in range(args.n_times):
 
     if args.before:
         for model in args.models:
-            victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model)
+            victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model, args=args)
             victim_model.optimize(g, index_split, args.epochs, args.lr, args.patience)
             acc, sp, eo = victim_model.eval(g, index_split)
             B_ACC[model].append(acc)
@@ -104,7 +105,7 @@ for i in range(args.n_times):
     dgl.save_graphs(f'./output/{args.dataset}_poisoned.bin', [g_attack])
 
     for model in args.models:
-        victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model)
+        victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model, args=args)
         victim_model.re_optimize(g_attack, uncertainty, index_split, args.epochs, args.lr, args.patience, args.defense)
         acc, sp, eo = victim_model.eval(g_attack, index_split)
         A_ACC[model].append(acc)

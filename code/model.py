@@ -4,12 +4,11 @@ import torch.nn.functional as F
 import dgl
 import copy
 
-from sympy.physics.units import action
 
 from utils import fair_matrix, progress_bar
 
-class VictimModel():
-    def __init__(self, in_feats, h_feats, num_classes, device, name='GCN'):
+class VictimModel:
+    def __init__(self, in_feats, h_feats, num_classes, device, name='GCN', args=None):
         
         assert name in ['GCN', 'SGC', 'APPNP', 'GraphSAGE', 'GAT'], "GNN model not implement"
         if name == 'GCN':
@@ -21,7 +20,7 @@ class VictimModel():
         elif name == 'GraphSAGE':
             self.model = GraphSAGE(in_feats, h_feats, num_classes)
         elif name == 'GAT':
-            self.model = GAT(in_feats, h_feats, num_classes)
+            self.model = GAT(in_feats, h_feats, num_classes, num_heads=args.att_heads)
 
         self.model.to(device)
 
