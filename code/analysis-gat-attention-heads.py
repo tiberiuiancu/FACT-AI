@@ -1,3 +1,7 @@
+"""
+plots the results of `make gat-attention-heads`
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
