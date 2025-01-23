@@ -118,8 +118,11 @@ else:
 	labels = g.ndata['label']
 	sens = g.ndata['sensitive']
 
-	adj = sp.coo_matrix((np.ones(g.edges()[0].shape[0]), (g.edges()[0], g.edges()[1])), shape=(labels.shape[0], labels.shape[0]), dtype=np.float32)
-	idx_sens_train = idx_train
+	adj = sp.coo_matrix((np.ones(g.edges()[0].shape[0]), (g.edges()[0], g.edges()[1])), shape=(labels.shape[0], labels.shape[0]), dtype=np.float32)	
+	sens_idx = set(np.where(sens >= 0)[0])
+        idx_sens_train = list(sens_idx - set(idx_val) - set(idx_test))
+        idx_sens_train = torch.LongTensor(idx_sens_train[:sens_number])
+
 print(len(idx_test))
 #%%
 import dgl
