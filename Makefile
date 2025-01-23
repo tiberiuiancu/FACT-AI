@@ -118,7 +118,7 @@ hyperparam-perturbation: setup
 
 # analysis on k (ratio): 0.1, 0.25, 0.5, 0.75
 # produces Figure A5
-hyperparam-k:
+hyperparam-k: setup
 	#pokec_z
 	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --ratio 0.1 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_1.csv
 	@python code/main.py --seed 42 --dataset pokec_z --alpha 0.01 --beta 4 --ratio 0.25 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_k_2.csv
@@ -160,6 +160,29 @@ hyperparam-d: setup
 	#combine
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparam_d_1.csv $(OUT_DIR)/hyperparam_d_2.csv $(OUT_DIR)/hyperparam_d_3.csv $(OUT_DIR)/hyperparam_d_4.csv $(OUT_DIR)/hyperparam_d_5.csv $(OUT_DIR)/hyperparam_d_6.csv $(OUT_DIR)/hyperparam_d_7.csv $(OUT_DIR)/hyperparam_d_8.csv $(OUT_DIR)/hyperparam_d_9.csv $(OUT_DIR)/hyperparam_d_10.csv $(OUT_DIR)/hyperparam_d_11.csv $(OUT_DIR)/hyperparam_d_12.csv $(OUT_DIR)/hyperparam_d_13.csv $(OUT_DIR)/hyperparam_d_14.csv $(OUT_DIR)/hyperparam_d_15.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters_d.csv REMOVE_CSV=1
 
+hyperparam-proxy: setup
+	#only k_hops
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops --k_hops 2 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_1.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops --k_hops 3 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_2.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops --k_hops 4 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_3.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops --k_hops 5 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_4.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops --k_hops 100 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_5.csv
+	#only pca
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy pca --components 2 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_6.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy pca --components 4 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_7.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy pca --components 8 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_8.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy pca --components 16 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_9.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy pca --components 32 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_10.csv
+	#k_hops+pca
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops+pca --k_hops 2 --components 8 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_11.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops+pca --k_hops 3 --components 8 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_12.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops+pca --k_hops 2 --components 16 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_13.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops+pca --k_hops 3 --components 16 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_14.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops+pca --k_hops 2 --components 32 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_15.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops+pca --k_hops 3 --components 32 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_16.csv
+	#combine
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparam_proxy_1.csv $(OUT_DIR)/hyperparam_proxy_2.csv $(OUT_DIR)/hyperparam_proxy_3.csv $(OUT_DIR)/hyperparam_proxy_4.csv $(OUT_DIR)/hyperparam_proxy_5.csv $(OUT_DIR)/hyperparam_proxy_6.csv $(OUT_DIR)/hyperparam_proxy_7.csv $(OUT_DIR)/hyperparam_proxy_8.csv $(OUT_DIR)/hyperparam_proxy_9.csv $(OUT_DIR)/hyperparam_proxy_10.csv $(OUT_DIR)/hyperparam_proxy_11.csv $(OUT_DIR)/hyperparam_proxy_12.csv $(OUT_DIR)/hyperparam_proxy_13.csv $(OUT_DIR)/hyperparam_proxy_14.csv $(OUT_DIR)/hyperparam_proxy_15.csv $(OUT_DIR)/hyperparam_proxy_16.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters_proxy.csv REMOVE_CSV=1
 
-hyperparameters: hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d
-	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparameters_alpha.csv $(OUT_DIR)/hyperparameters_beta.csv $(OUT_DIR)/hyperparameters_perturbation.csv $(OUT_DIR)/hyperparameters_k.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters.csv REMOVE_CSV=0
+
+hyperparameters: hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d hyperparam-proxy
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparameters_alpha.csv $(OUT_DIR)/hyperparameters_beta.csv $(OUT_DIR)/hyperparameters_perturbation.csv $(OUT_DIR)/hyperparameters_k.csv $(OUT_DIR)/hyperparameters_d.csv $(OUT_DIR)/hyperparameters_proxy.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters.csv REMOVE_CSV=0
