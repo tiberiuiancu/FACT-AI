@@ -4,8 +4,6 @@ import torch.nn.functional as F
 import dgl
 import copy
 
-from sympy.physics.units import action
-
 from utils import fair_matrix, progress_bar
 
 class VictimModel():
