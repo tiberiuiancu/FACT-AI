@@ -121,7 +121,7 @@ for i in range(args.n_times):
 
 if emissions_export_path:
     tracker.stop()
-    results = json.dumps(tracker.final_emissions_data.values)
+    results = json.dumps(tracker.final_emissions_data.values) + "\n"
     mode = 'a' if os.path.exists(emissions_export_path) else 'w'
     with open(emissions_export_path, mode) as f:
         f.write(results)
