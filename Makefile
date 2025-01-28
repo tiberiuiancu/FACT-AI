@@ -1,4 +1,4 @@
-.PHONY: setup combine_csv all nifa defense hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d hyperparameters
+.PHONY: setup combine_csv all nifa defense hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d hyperparam-proxy hyperparameters
 
 DEVICE ?= 0
 
