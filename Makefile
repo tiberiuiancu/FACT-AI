@@ -184,10 +184,10 @@ gat-node-selection-mode: setup
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/gat_node_selection_mode_1.csv $(OUT_DIR)/gat_node_selection_mode_2.csv' OUTPUT_CSV=$(OUT_DIR)/gat_node_selection_mode.csv REMOVE_CSV=1
 
 gat-attention-heads: setup
-	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 1 --output_path $(OUT_DIR)/gat_attention_heads_1.csv
-	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 2 --output_path $(OUT_DIR)/gat_attention_heads_2.csv
-	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 4 --output_path $(OUT_DIR)/gat_attention_heads_3.csv
-	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 8 --output_path $(OUT_DIR)/gat_attention_heads_4.csv
-	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 16 --output_path $(OUT_DIR)/gat_attention_heads_5.csv
-	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 32 --output_path $(OUT_DIR)/gat_attention_heads_6.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 1 --output_path $(OUT_DIR)/gat_attention_heads_1.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 2 --output_path $(OUT_DIR)/gat_attention_heads_2.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 4 --output_path $(OUT_DIR)/gat_attention_heads_3.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 8 --output_path $(OUT_DIR)/gat_attention_heads_4.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 16 --output_path $(OUT_DIR)/gat_attention_heads_5.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 32 --output_path $(OUT_DIR)/gat_attention_heads_6.csv
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/gat_attention_heads_1.csv $(OUT_DIR)/gat_attention_heads_2.csv $(OUT_DIR)/gat_attention_heads_3.csv $(OUT_DIR)/gat_attention_heads_4.csv $(OUT_DIR)/gat_attention_heads_5.csv $(OUT_DIR)/gat_attention_heads_6.csv' OUTPUT_CSV=$(OUT_DIR)/gat_attention_heads.csv REMOVE_CSV=1
