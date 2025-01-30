@@ -22,7 +22,7 @@ plt.xticks(df['att_heads'], labels=df['att_heads'], fontsize=TICK_SIZE)
 plt.minorticks_off()
 plt.yticks(fontsize=TICK_SIZE)
 
-plt.title('Unfairness vs # of attention heads', pad=20)
+plt.title('Unfairness vs # of attention heads', pad=20, fontsize=FONT_SIZE)
 plt.xlabel('Number of attention heads', fontsize=FONT_SIZE)
 plt.ylabel('Unfairness (SP + EO)', fontsize=FONT_SIZE)
 plt.savefig('output/gat_attention_heads.pdf')
