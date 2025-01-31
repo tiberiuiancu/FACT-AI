@@ -42,6 +42,10 @@ conda env create -f fact.yml
   └── fact_cpu.yml
   ```
 
+- Additionally you can find poisoned graphs for the attacks on the fairGNNs in the following google drive folder:
+https://drive.google.com/drive/folders/1G6GrLr-sqKugrF9Q1oslv0j3rwhtnY0z?usp=sharing
+
+
 ## Run the code
 
 The makefile contains targets to run each experiment in the original paper.
