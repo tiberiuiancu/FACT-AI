@@ -42,15 +42,24 @@ print(args)
 
 # -----------------------------------main------------------------------------------ 
 
+from copy import deepcopy
+import os
+import json
+
 import torch
 import numpy as np
-import time
-from copy import deepcopy
+import dgl
+from codecarbon import EmissionsTracker
 
 from model import VictimModel
-from attack import *
+from attack import Attacker
 from utils import load_data, extract_index_split
 import proxy as prx
+
+emissions_export_path = os.getenv('EMISSIONS_EXPORT_PATH')
+if emissions_export_path:
+    tracker = EmissionsTracker()
+    tracker.start()
 
 device = torch.device("cuda", args.device) if torch.cuda.is_available() else torch.device("cpu")
 
@@ -111,6 +120,13 @@ for i in range(args.n_times):
         A_ACC[model].append(acc)
         A_SP[model].append(sp)
         A_EO[model].append(eo)
+
+if emissions_export_path:
+    tracker.stop()
+    results = json.dumps(tracker.final_emissions_data.values) + "\n"
+    mode = 'a' if os.path.exists(emissions_export_path) else 'w'
+    with open(emissions_export_path, mode) as f:
+        f.write(results)
 
 print('================Finished================')
 args_dict = deepcopy(vars(args))
