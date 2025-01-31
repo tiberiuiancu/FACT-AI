@@ -75,7 +75,17 @@ if args.cuda:
 # Load data
 print(args.dataset)
 
-if args.dataset != 'nba':
+if "dblp" in args.dataset:
+    dataset = None
+    sens_attr = None
+    predict_attr = None
+    label_number = args.label_number
+    sens_number = args.sens_number
+    seed = 42
+    path=None
+    test_idx=False
+
+elif args.dataset != 'nba':
     if 'pokec_z' in args.dataset:
         dataset = 'region_job'
     else:
@@ -118,11 +128,11 @@ else:
 	labels = g.ndata['label']
 	sens = g.ndata['sensitive']
 
-	adj = sp.coo_matrix((np.ones(g.edges()[0].shape[0]), (g.edges()[0], g.edges()[1])), shape=(labels.shape[0], labels.shape[0]), dtype=np.float32)	
+	adj = sp.coo_matrix((np.ones(g.edges()[0].shape[0]), (g.edges()[0], g.edges()[1])), shape=(labels.shape[0], labels.shape[0]), dtype=np.float32)
 	sens_idx = set(np.where(sens >= 0)[0])
-        idx_sens_train = list(sens_idx - set(idx_val) - set(idx_test))
-        idx_sens_train = torch.LongTensor(idx_sens_train[:sens_number])
-
+	idx_sens_train = list(sens_idx - set(idx_val) - set(idx_test))
+	idx_sens_train = torch.LongTensor(idx_sens_train[:sens_number])
+	#idx_sens_train = idx_train
 print(len(idx_test))
 #%%
 import dgl
@@ -154,7 +164,11 @@ if sens_attr:
 # Model and optimizer
 
 model = FairGNN(nfeat = features.shape[1], args = args)
-model.estimator.load_state_dict(torch.load("./checkpoint/GCN_sens_{}_ns_{}".format(dataset,sens_number)))
+try:
+    model.estimator.load_state_dict(torch.load("./checkpoint/GCN_sens_{}_ns_{}".format(dataset,sens_number)))
+except:
+    print("skipped loading checkpoint")
+    pass
 if args.cuda:
     model.cuda()
     features = features.cuda()
