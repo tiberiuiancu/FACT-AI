@@ -42,11 +42,15 @@ conda env create -f fact.yml
   └── fact_cpu.yml
   ```
 
+- Additionally you can find poisoned graphs for the attacks on the fairGNNs in the following google drive folder:
+https://drive.google.com/drive/folders/1G6GrLr-sqKugrF9Q1oslv0j3rwhtnY0z?usp=sharing
+
+
 ## Run the code
 Due to conflicting dependencies, our FairSIN experiments can be run from a separate repository:
 https://github.com/sobek1886/RE-NIFA-FairSIN
 
-Other than that, the makefile contains targets to run each experiment in the original paper.
+Other than that, the Makefile contains targets to run each experiment in the original paper. Also, to run the experiments on the FairGNN models there are different run commands not contained by the Makefile. We will introduce them at the end of this section.
 The output of each command will be stored in the `output` directory, and have the same name as the target.
 
 For example, to run the main experiment of the paper, you can run the following command:
@@ -79,6 +83,26 @@ Below is an overview of the targets in the makefile, and their corresponding exp
   - `hyperparameter_beta`: Runs experiments on hyperparameter beta (produces Figure A3).
   - `hyperparameter_perturbation`: Runs experiments on node injection budget (produces Figure A4).
   - `hyperparameter_k`: Runs experiments on hyperparameter k: uncertainty threshold (produces Figure A5).
+ 
+To run the experiments of the FairVGNN you need to (1) download the poisoned datasets from the google drive folder given (2) put the files into the location code/FairVGNN/dataset/reproducibility (3) run the folloing command (adjust dataset if needed) in the FairVGNN folder:
+python fairvgnn.py --dataset='pokec_n_poisoned' --encoder='GCN' --clip_e=0.1 --d_epochs=5 --g_epochs=5 --c_epochs=5 --c_lr=0.01 --e_lr=0.001 --ratio=0.5 --epochs=200 --prop='spmm' --alpha=0.5 --clip_e=0.5 
+
+To run the experiments of the FairGNN you need to (1) download the poisoned datasets from the google drive folder given (2) put the files into the location code/FairGNN/dataset/reproducibility (3) run the folloing command (adjust dataset and other hyperparameters if needed) in the src folder:
+python train_fairGNN.py \
+        --seed=42 \
+        --epochs=2000 \
+        --model=GAT \
+        --sens_number=200 \
+        --dataset='reproducibility/dblp_poisoned' \
+        --num-hidden=128 \
+        --acc=0.65 \
+        --roc=0.7 \
+        --alpha=4 \
+        --beta=0.01 \
+        --num-heads=1 \
+        --reproducibility=1
+
+
 
 ## Licenses
 

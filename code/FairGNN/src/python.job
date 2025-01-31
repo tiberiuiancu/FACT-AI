@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu_a100
+#SBATCH --gpus=1
+#SBATCH --job-name=matthias
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=9
+#SBATCH --time=00:15:00
+#SBATCH --output=slurm_output_%A.out
+
+module purge
+module load 2024
+module load Anaconda3/2024.06-1
+
+# Your job starts in the directory where you call sbatch
+cd $HOME/matthias/FairGNN/src
+
+eval "$(conda shell.bash hook)"
+conda activate fact
+
+# Activate the Conda environment
+#source activate fact_cloned
+
+# Check if CUDA is available
+python -c "import torch; print(f'cuda available: {torch.cuda.is_available()}')"
+
+# Run the training script
+python train_fairGNN.py \
+        --seed=42 \
+        --epochs=2000 \
+        --model=GCN \
+        --sens_number=200 \
+        --dataset='reproducibility/pokec_n_poisoned' \
+        --num-hidden=128 \
+        --acc=0.62 \
+        --roc=0.65 \
+        --alpha=100 \
+        --beta=1 \
+	--reproducibility=1

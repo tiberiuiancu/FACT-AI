@@ -1,4 +1,4 @@
-.PHONY: setup combine_csv all nifa defense hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d hyperparam-proxy hyperparameters parameter-scaling surrogate gat-node-selection-mode gat-attention-heads
+.PHONY: setup combine_csv all nifa defense hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d k_hops pca k_hops_3_pca k_hops_4_pca hyperparameters parameter-scaling surrogate gat-node-selection-mode gat-attention-heads
 
 DEVICE ?= 0
 
@@ -159,31 +159,65 @@ hyperparam-d: setup
 	#combine
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparam_d_1.csv $(OUT_DIR)/hyperparam_d_2.csv $(OUT_DIR)/hyperparam_d_3.csv $(OUT_DIR)/hyperparam_d_4.csv $(OUT_DIR)/hyperparam_d_5.csv $(OUT_DIR)/hyperparam_d_6.csv $(OUT_DIR)/hyperparam_d_7.csv $(OUT_DIR)/hyperparam_d_8.csv $(OUT_DIR)/hyperparam_d_9.csv $(OUT_DIR)/hyperparam_d_10.csv $(OUT_DIR)/hyperparam_d_11.csv $(OUT_DIR)/hyperparam_d_12.csv $(OUT_DIR)/hyperparam_d_13.csv $(OUT_DIR)/hyperparam_d_14.csv $(OUT_DIR)/hyperparam_d_15.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters_d.csv REMOVE_CSV=1
 
-hyperparam-proxy: setup
+pca: setup
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy pca --components 1 --device $(DEVICE) --output_path $(OUT_DIR)/pca_1.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy pca --components 2 --device $(DEVICE) --output_path $(OUT_DIR)/pca_2.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy pca --components 4 --device $(DEVICE) --output_path $(OUT_DIR)/pca_4.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy pca --components 8 --device $(DEVICE) --output_path $(OUT_DIR)/pca_8.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy pca --components 16 --device $(DEVICE) --output_path $(OUT_DIR)/pca_16.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy pca --components 32 --device $(DEVICE) --output_path $(OUT_DIR)/pca_32.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy pca --components 64 --device $(DEVICE) --output_path $(OUT_DIR)/pca_64.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy pca --components 128 --device $(DEVICE) --output_path $(OUT_DIR)/pca_128.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy pca --components 256 --device $(DEVICE) --output_path $(OUT_DIR)/pca_256.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy pca --components 512 --device $(DEVICE) --output_path $(OUT_DIR)/pca_512.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy pca --components 1024 --device $(DEVICE) --output_path $(OUT_DIR)/pca_1024.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy pca --components 2048 --device $(DEVICE) --output_path $(OUT_DIR)/pca_2048.csv --models 'GCN'
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/pca_1.csv $(OUT_DIR)/pca_2.csv $(OUT_DIR)/pca_4.csv $(OUT_DIR)/pca_8.csv $(OUT_DIR)/pca_16.csv $(OUT_DIR)/pca_32.csv $(OUT_DIR)/pca_64.csv $(OUT_DIR)/pca_128.csv $(OUT_DIR)/pca_256.csv $(OUT_DIR)/pca_512.csv $(OUT_DIR)/pca_1024.csv $(OUT_DIR)/pca_2048.csv' OUTPUT_CSV=$(OUT_DIR)/pca.csv REMOVE_CSV=1
+
+k_hops: setup
 	#only k_hops
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops --k_hops 2 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_1.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops --k_hops 3 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_2.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops --k_hops 4 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_3.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops --k_hops 5 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_4.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops --k_hops 100 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_5.csv
-	#only pca
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy pca --components 2 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_6.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy pca --components 4 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_7.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy pca --components 8 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_8.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy pca --components 16 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_9.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy pca --components 32 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_10.csv
-	#k_hops+pca
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops+pca --k_hops 2 --components 8 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_11.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops+pca --k_hops 3 --components 8 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_12.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops+pca --k_hops 2 --components 16 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_13.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops+pca --k_hops 3 --components 16 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_14.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops+pca --k_hops 2 --components 32 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_15.csv
-	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --proxy k_hops+pca --k_hops 3 --components 32 --device $(DEVICE) --models 'GCN' --output_path $(OUT_DIR)/hyperparam_proxy_16.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops --k_hops 3 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops --k_hops 4 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops --k_hops 5 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_5.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops --k_hops 6 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_6.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops --k_hops 7 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_7.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops --k_hops 8 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_8.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops --k_hops 9 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_9.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops --k_hops 10 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_10.csv --models 'GCN'
 	#combine
-	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparam_proxy_1.csv $(OUT_DIR)/hyperparam_proxy_2.csv $(OUT_DIR)/hyperparam_proxy_3.csv $(OUT_DIR)/hyperparam_proxy_4.csv $(OUT_DIR)/hyperparam_proxy_5.csv $(OUT_DIR)/hyperparam_proxy_6.csv $(OUT_DIR)/hyperparam_proxy_7.csv $(OUT_DIR)/hyperparam_proxy_8.csv $(OUT_DIR)/hyperparam_proxy_9.csv $(OUT_DIR)/hyperparam_proxy_10.csv $(OUT_DIR)/hyperparam_proxy_11.csv $(OUT_DIR)/hyperparam_proxy_12.csv $(OUT_DIR)/hyperparam_proxy_13.csv $(OUT_DIR)/hyperparam_proxy_14.csv $(OUT_DIR)/hyperparam_proxy_15.csv $(OUT_DIR)/hyperparam_proxy_16.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters_proxy.csv REMOVE_CSV=1
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/k_hops_3.csv $(OUT_DIR)/k_hops_4.csv $(OUT_DIR)/k_hops_5.csv $(OUT_DIR)/k_hops_6.csv $(OUT_DIR)/k_hops_7.csv $(OUT_DIR)/k_hops_8.csv $(OUT_DIR)/k_hops_9.csv $(OUT_DIR)/k_hops_10.csv' OUTPUT_CSV=$(OUT_DIR)/k_hops.csv REMOVE_CSV=1
 
+k_hops_3_pca: setup
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 3 --components 1 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3_pca_1.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 3 --components 2 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3_pca_2.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 3 --components 4 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3_pca_4.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 3 --components 8 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3_pca_8.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 3 --components 16 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3_pca_16.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 3 --components 32 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3_pca_32.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 3 --components 64 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3_pca_64.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 3 --components 128 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3_pca_128.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 3 --components 256 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3_pca_256.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 3 --components 512 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3_pca_512.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 3 --components 1024 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3_pca_1024.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 3 --components 2048 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_3_pca_2048.csv --models 'GCN'
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/k_hops_3_pca_1.csv $(OUT_DIR)/k_hops_3_pca_2.csv $(OUT_DIR)/k_hops_3_pca_4.csv $(OUT_DIR)/k_hops_3_pca_8.csv $(OUT_DIR)/k_hops_3_pca_16.csv $(OUT_DIR)/k_hops_3_pca_32.csv $(OUT_DIR)/k_hops_3_pca_64.csv $(OUT_DIR)/k_hops_3_pca_128.csv $(OUT_DIR)/k_hops_3_pca_256.csv $(OUT_DIR)/k_hops_3_pca_512.csv $(OUT_DIR)/k_hops_3_pca_1024.csv $(OUT_DIR)/k_hops_3_pca_2048.csv' OUTPUT_CSV=$(OUT_DIR)/k_hops_3_pca.csv REMOVE_CSV=1
 
-hyperparameters: hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d hyperparam-proxy
+k_hops_4_pca: setup
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 1 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_1.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 2 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_2.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 4 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_4.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 8 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_8.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 16 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_16.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 32 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_32.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 64 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_64.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 128 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_128.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 256 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_256.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 512 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_512.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 1024 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_1024.csv --models 'GCN'
+	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 2048 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_2048.csv --models 'GCN'
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/k_hops_4_pca_1.csv $(OUT_DIR)/k_hops_4_pca_2.csv $(OUT_DIR)/k_hops_4_pca_4.csv $(OUT_DIR)/k_hops_4_pca_8.csv $(OUT_DIR)/k_hops_4_pca_16.csv $(OUT_DIR)/k_hops_4_pca_32.csv $(OUT_DIR)/k_hops_4_pca_64.csv $(OUT_DIR)/k_hops_4_pca_128.csv $(OUT_DIR)/k_hops_4_pca_256.csv $(OUT_DIR)/k_hops_4_pca_512.csv $(OUT_DIR)/k_hops_4_pca_1024.csv $(OUT_DIR)/k_hops_4_pca_2048.csv' OUTPUT_CSV=$(OUT_DIR)/k_hops_4_pca.csv REMOVE_CSV=1
+
+hyperparameters: hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d k_hops pca k_hops_3_pca k_hops_4_pca
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparameters_alpha.csv $(OUT_DIR)/hyperparameters_beta.csv $(OUT_DIR)/hyperparameters_perturbation.csv $(OUT_DIR)/hyperparameters_k.csv $(OUT_DIR)/hyperparameters_d.csv $(OUT_DIR)/hyperparameters_proxy.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters.csv REMOVE_CSV=0
 
 parameter-scaling: setup
