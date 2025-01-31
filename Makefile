@@ -1,4 +1,4 @@
-.PHONY: setup combine_csv all nifa defense hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d hyperparam-proxy hyperparameters
+.PHONY: setup combine_csv all nifa defense hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d k_hops pca k_hops_3_pca k_hops_4_pca hyperparameters
 
 DEVICE ?= 0
 
@@ -218,5 +218,5 @@ k_hops_4_pca: setup
 	@python code/main.py --seed 42 --n_times 5 --dataset dblp --alpha 0.1 --beta 8 --node 32 --edge 24 --epochs 500 --proxy k_hops+pca --k_hops 4 --components 2048 --device $(DEVICE) --output_path $(OUT_DIR)/k_hops_4_pca_2048.csv --models 'GCN'
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/k_hops_4_pca_1.csv $(OUT_DIR)/k_hops_4_pca_2.csv $(OUT_DIR)/k_hops_4_pca_4.csv $(OUT_DIR)/k_hops_4_pca_8.csv $(OUT_DIR)/k_hops_4_pca_16.csv $(OUT_DIR)/k_hops_4_pca_32.csv $(OUT_DIR)/k_hops_4_pca_64.csv $(OUT_DIR)/k_hops_4_pca_128.csv $(OUT_DIR)/k_hops_4_pca_256.csv $(OUT_DIR)/k_hops_4_pca_512.csv $(OUT_DIR)/k_hops_4_pca_1024.csv $(OUT_DIR)/k_hops_4_pca_2048.csv' OUTPUT_CSV=$(OUT_DIR)/k_hops_4_pca.csv REMOVE_CSV=1
 
-hyperparameters: hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d hyperparam-proxy
+hyperparameters: hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d k_hops pca k_hops_3_pca k_hops_4_pca
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparameters_alpha.csv $(OUT_DIR)/hyperparameters_beta.csv $(OUT_DIR)/hyperparameters_perturbation.csv $(OUT_DIR)/hyperparameters_k.csv $(OUT_DIR)/hyperparameters_d.csv $(OUT_DIR)/hyperparameters_proxy.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters.csv REMOVE_CSV=0
