@@ -1,39 +1,0 @@
-============================================================================================== 
-Warning! Mixing Conda and module environments may lead to corruption of the
-user environment. 
-We do not recommend users mixing those two environments unless absolutely
-necessary. Note that 
-SURF does not provide any support for Conda environment.
-For more information, please refer to our software policy page:
-https://servicedesk.surf.nl/wiki/display/WIKI/Software+policy+Snellius#SoftwarepolicySnellius-UseofAnacondaandMinicondaenvironmentsonSnellius 
-
-Remember that many packages have already been installed on the system and can
-be loaded using 
-the 'module load <package__name>' command. If you are uncertain if a package is
-already available 
-on the system, please use 'module avail' or 'module spider' to search for it.
-============================================================================================== 
-***********************POKEC-N***********************
-==========GCN-spmm==========
-features: torch.Size([66569, 265])
-  0%|          | 0/5 [00:00<?, ?run/s] 20%|██        | 1/5 [03:25<13:43, 205.97s/run] 40%|████      | 2/5 [06:51<10:16, 205.46s/run] 60%|██████    | 3/5 [10:16<06:50, 205.30s/run] 80%|████████  | 4/5 [13:41<03:25, 205.21s/run]100%|██████████| 5/5 [17:06<00:00, 205.17s/run]100%|██████████| 5/5 [17:06<00:00, 205.27s/run]
-======pokec_nGCN======
-auc_roc: 72.92535885800906 1.0404783433681881
-Acc: 68.75454545454545 0.3809513970864908
-f1: 58.93146835049724 1.8804281766904714
-parity: 2.0744048536191584 0.664263529096048
-equality: 3.864214992927865 0.6714965367089809
-
-JOB STATISTICS
-==============
-Job ID: 9547410
-Cluster: snellius
-User/Group: tiancu/tiancu
-State: COMPLETED (exit code 0)
-Nodes: 1
-Cores per node: 18
-CPU Utilized: 00:17:42
-CPU Efficiency: 5.45% of 05:24:36 core-walltime
-Job Wall-clock time: 00:18:02
-Memory Utilized: 898.35 MB
-Memory Efficiency: 0.73% of 120.00 GB
