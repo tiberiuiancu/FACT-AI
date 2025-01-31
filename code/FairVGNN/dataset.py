@@ -324,7 +324,7 @@ def load_german(dataset, sens_attr="Gender", predict_attr="GoodCustomer", path="
 
     return adj_norm_sp, edge_index, features, labels, train_mask, val_mask, test_mask, sens
 
-def load_poisoned(dataset, path="dataset/reproducability", label_number=1000, **kwargs):
+def load_reproduced(dataset, path="dataset/reproducability", label_number=1000, **kwargs):
     glist, _ = dgl.load_graphs(f'{path}/{dataset}.bin')  # load graph file
     g = glist[0]
 
@@ -362,7 +362,7 @@ def get_dataset(dataname, top_k):
     elif(dataname == 'german'):
         load, label_num = load_german, 100
     else:
-        load, label_num = load_poisoned, None
+        load, label_num = load_reproduced, None
 
     adj_norm_sp, edge_index, features, labels, train_mask, val_mask, test_mask, sens = load(
         dataset=dataname, label_number=label_num)
@@ -374,7 +374,7 @@ def get_dataset(dataname, top_k):
     elif('pokec' in dataname):
         sens_idx = 3
     else:
-        sens_idx = 1 # sensible feature for dblp not known TODO
+        sens_idx = 1 # sensible feature for dblp
 
     x_max, x_min = torch.max(features, dim=0)[
         0], torch.min(features, dim=0)[0]
