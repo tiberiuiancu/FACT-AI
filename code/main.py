@@ -16,6 +16,7 @@ parser.add_argument('--defense', type=float, default=0, help='the ratio of defen
 parser.add_argument('--ratio', type=float, default=0.5, help='node of top ratio uncertainty are attacked')
 parser.add_argument('--before', action='store_true')
 parser.add_argument('--models', type=str, nargs='*', default=[])
+parser.add_argument('--att_heads', type=int, default=8, help='number of attention heads')
 parser.add_argument('--loops', type=int, default=50)
 
 parser.add_argument('--mode', type=str, default='uncertainty', choices=['uncertainty','degree'], help='principle for selecting target nodes')
@@ -27,6 +28,7 @@ parser.add_argument('--components', type=int, default=8, help='number of princip
 
 parser.add_argument('--epochs', type=int, default=1000, help='number of epochs to train the victim model')
 parser.add_argument('--bn_epochs', type=int, default=500, help='number of epochs to train the bayesian network')
+parser.add_argument('--surrogate', type=str, default='GCN', choices=['GCN','GAT'], help='surrogate model architecture for feature attack')
 parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
 parser.add_argument('--patience', type=int, default=50, help='early stop patience')
 parser.add_argument('--n_times', type=int, default=1, help='times to run')
@@ -40,15 +42,24 @@ print(args)
 
 # -----------------------------------main------------------------------------------ 
 
+from copy import deepcopy
+import os
+import json
+
 import torch
 import numpy as np
-import time
-from copy import deepcopy
+import dgl
+from codecarbon import EmissionsTracker
 
 from model import VictimModel
-from attack import *
+from attack import Attacker
 from utils import load_data, extract_index_split
 import proxy as prx
+
+emissions_export_path = os.getenv('EMISSIONS_EXPORT_PATH')
+if emissions_export_path:
+    tracker = EmissionsTracker()
+    tracker.start()
 
 device = torch.device("cuda", args.device) if torch.cuda.is_available() else torch.device("cpu")
 
@@ -73,7 +84,7 @@ for i in range(args.n_times):
 
     if args.before:
         for model in args.models:
-            victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model)
+            victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model, args=args)
             victim_model.optimize(g, index_split, args.epochs, args.lr, args.patience)
             acc, sp, eo = victim_model.eval(g, index_split)
             B_ACC[model].append(acc)
@@ -103,12 +114,19 @@ for i in range(args.n_times):
     dgl.save_graphs(f'./output/{args.dataset}_poisoned.bin', [g_attack])
 
     for model in args.models:
-        victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model)
+        victim_model = VictimModel(in_dim, hid_dim, out_dim, device, name=model, args=args)
         victim_model.re_optimize(g_attack, uncertainty, index_split, args.epochs, args.lr, args.patience, args.defense)
         acc, sp, eo = victim_model.eval(g_attack, index_split)
         A_ACC[model].append(acc)
         A_SP[model].append(sp)
         A_EO[model].append(eo)
+
+if emissions_export_path:
+    tracker.stop()
+    results = json.dumps(tracker.final_emissions_data.values) + "\n"
+    mode = 'a' if os.path.exists(emissions_export_path) else 'w'
+    with open(emissions_export_path, mode) as f:
+        f.write(results)
 
 print('================Finished================')
 args_dict = deepcopy(vars(args))
