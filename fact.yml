@@ -19,9 +19,9 @@ dependencies:
   - pandas=2.2.3
   - tqdm=4.67.1
   - codecarbon=2.2.2
-  - torch-scatter 
-  - torch-sparse 
-  - torch-cluster 
-  - torch-spline-conv 
-  - torch-geometric
+  - torch-scatter=2.1.2
+  - torch-sparse=0.6.18
+  - torch-cluster=1.6.3
+  - torch-spline-conv=1.2.2
+  - torch-geometric=2.6.1
 
