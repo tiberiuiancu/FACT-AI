@@ -1,4 +1,4 @@
-.PHONY: setup combine_csv all nifa defense hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d hyperparam-proxy hyperparameters
+.PHONY: setup combine_csv all nifa defense hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d hyperparam-proxy hyperparameters parameter-scaling surrogate gat-node-selection-mode gat-attention-heads
 
 DEVICE ?= 0
 
@@ -17,7 +17,6 @@ combine_csv:
 
 # Runs the main experiment of the paper (results in Table 2)
 # The results are saved in the output folder at nifa.csv
-# todo: re-add FairGNN, FairVGNN, FairSIN
 nifa: setup
 	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --before --device $(DEVICE) --output_path $(OUT_DIR)/nifa_pokec_z.csv --models 'GCN' 'GraphSAGE' 'APPNP' 'SGC' 'GAT' #'FairGNN' 'FairVGNN' 'FairSIN'
 
@@ -186,3 +185,32 @@ hyperparam-proxy: setup
 
 hyperparameters: hyperparam-alpha hyperparam-beta hyperparam-perturbation hyperparam-k hyperparam-d hyperparam-proxy
 	$(MAKE) combine_csv ARGS='$(OUT_DIR)/hyperparameters_alpha.csv $(OUT_DIR)/hyperparameters_beta.csv $(OUT_DIR)/hyperparameters_perturbation.csv $(OUT_DIR)/hyperparameters_k.csv $(OUT_DIR)/hyperparameters_d.csv $(OUT_DIR)/hyperparameters_proxy.csv' OUTPUT_CSV=$(OUT_DIR)/hyperparameters.csv REMOVE_CSV=0
+
+parameter-scaling: setup
+	@python code/main.py --hid_dim 16 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_1.csv
+	@python code/main.py --hid_dim 32 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_2.csv
+	@python code/main.py --hid_dim 64 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_3.csv
+	@python code/main.py --hid_dim 128 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_4.csv
+	@python code/main.py --hid_dim 256 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_5.csv
+	@python code/main.py --hid_dim 512 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_6.csv
+	@python code/main.py --hid_dim 1024 --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GCN' 'GAT' --output_path $(OUT_DIR)/parameter_scaling_7.csv
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/parameter_scaling_1.csv $(OUT_DIR)/parameter_scaling_2.csv $(OUT_DIR)/parameter_scaling_3.csv $(OUT_DIR)/parameter_scaling_4.csv $(OUT_DIR)/parameter_scaling_5.csv $(OUT_DIR)/parameter_scaling_6.csv $(OUT_DIR)/parameter_scaling_7.csv' OUTPUT_CSV=$(OUT_DIR)/parameter_scaling.csv REMOVE_CSV=1
+
+surrogate: setup
+	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' 'GCN' --surrogate 'GCN' --output_path $(OUT_DIR)/surrogate_1.csv
+	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' 'GCN' --surrogate 'GAT' --output_path $(OUT_DIR)/surrogate_2.csv
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/surrogate_1.csv $(OUT_DIR)/surrogate_2.csv' OUTPUT_CSV=$(OUT_DIR)/surrogate.csv REMOVE_CSV=1
+
+gat-node-selection-mode: setup
+	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --mode 'uncertainty' --output_path $(OUT_DIR)/gat_node_selection_mode_1.csv
+	@python code/main.py --seed 42 --n_times 3 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --mode 'degree' --output_path $(OUT_DIR)/gat_node_selection_mode_2.csv
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/gat_node_selection_mode_1.csv $(OUT_DIR)/gat_node_selection_mode_2.csv' OUTPUT_CSV=$(OUT_DIR)/gat_node_selection_mode.csv REMOVE_CSV=1
+
+gat-attention-heads: setup
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 1 --output_path $(OUT_DIR)/gat_attention_heads_1.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 2 --output_path $(OUT_DIR)/gat_attention_heads_2.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 4 --output_path $(OUT_DIR)/gat_attention_heads_3.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 8 --output_path $(OUT_DIR)/gat_attention_heads_4.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 16 --output_path $(OUT_DIR)/gat_attention_heads_5.csv
+	@python code/main.py --seed 42 --n_times 5 --dataset pokec_z --alpha 0.01 --beta 4 --node 102 --edge 50 --device $(DEVICE) --models 'GAT' --att_heads 32 --output_path $(OUT_DIR)/gat_attention_heads_6.csv
+	$(MAKE) combine_csv ARGS='$(OUT_DIR)/gat_attention_heads_1.csv $(OUT_DIR)/gat_attention_heads_2.csv $(OUT_DIR)/gat_attention_heads_3.csv $(OUT_DIR)/gat_attention_heads_4.csv $(OUT_DIR)/gat_attention_heads_5.csv $(OUT_DIR)/gat_attention_heads_6.csv' OUTPUT_CSV=$(OUT_DIR)/gat_attention_heads.csv REMOVE_CSV=1

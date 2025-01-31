@@ -126,9 +126,14 @@ class Edge_Attack():
 
 
 class Feature_Attack(nn.Module):    
-    def __init__(self, g, in_dim, hid_dim, out_dim, node):
+    def __init__(self, g, in_dim, hid_dim, out_dim, node, model='GCN'):
         super(Feature_Attack, self).__init__()
-        self.model = GCN(in_dim, hid_dim, out_dim)
+        if model == 'GCN':
+            self.model = GCN(in_dim, hid_dim, out_dim)
+        elif model == 'GAT':
+            self.model = GAT(in_dim, hid_dim, out_dim)
+        else:
+            raise NotImplementedError
 
         feature = g.ndata['feature']
         self.lower_bound = torch.min(feature, dim=0)[0].repeat(node, 1)
@@ -206,7 +211,7 @@ class Attacker():
         self.args = args
         self.bayesian_network = Bayesian_Network(in_dim, hid_dim, out_dim, args.T, args.theta, device).to(device)
         self.edge_attack = Edge_Attack(args.node, args.edge, args.mode)
-        self.feature_attack = Feature_Attack(g, in_dim, hid_dim, out_dim, args.node).to(device)
+        self.feature_attack = Feature_Attack(g, in_dim, hid_dim, out_dim, args.node, args.surrogate).to(device)
 
     def attack(self, g, index_split):
 

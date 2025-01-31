@@ -4,10 +4,11 @@ import torch.nn.functional as F
 import dgl
 import copy
 
+
 from utils import fair_matrix, progress_bar
 
-class VictimModel():
-    def __init__(self, in_feats, h_feats, num_classes, device, name='GCN'):
+class VictimModel:
+    def __init__(self, in_feats, h_feats, num_classes, device, name='GCN', args=None):
         
         assert name in ['GCN', 'SGC', 'APPNP', 'GraphSAGE', 'GAT'], "GNN model not implement"
         if name == 'GCN':
@@ -19,7 +20,7 @@ class VictimModel():
         elif name == 'GraphSAGE':
             self.model = GraphSAGE(in_feats, h_feats, num_classes)
         elif name == 'GAT':
-            self.model = GAT(in_feats, h_feats, num_classes)
+            self.model = GAT(in_feats, h_feats, num_classes, num_heads=args.att_heads)
 
         self.model.to(device)
 
@@ -168,8 +169,8 @@ class GraphSAGE(nn.Module):
 class GAT(nn.Module):
     def __init__(self, in_feats, hid_feats, out_feats, num_heads=8):
         super(GAT, self).__init__()
-        self.gat1 = dgl.nn.GATConv(in_feats, hid_feats, num_heads, activation=F.elu)
-        self.gat2 = dgl.nn.GATConv(hid_feats * num_heads, out_feats, 1, activation=None)  # Single output head
+        self.gat1 = dgl.nn.GATConv(in_feats, hid_feats // num_heads, num_heads, activation=F.elu)
+        self.gat2 = dgl.nn.GATConv(hid_feats, out_feats, 1, activation=None)  # Single output head
 
     def forward(self, graph, inputs):
         h = self.gat1(graph, inputs)
