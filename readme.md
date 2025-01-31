@@ -1,8 +1,8 @@
-# Implementations for NIFA
+# [Re] On the Real-World Feasibility of Node Injection Fairness Attacks
 
 [//]: # (todo: add the link to our paper)
 
-This repository includes the implementations for our paper at NeurIPS 2024: [***Are Your Models Still Fair? Fairness Attacks on Graph Neural Networks via Node Injections.***](https://arxiv.org/abs/2406.03052)
+This repository includes our reproduction of the paper [***Are Your Models Still Fair? Fairness Attacks on Graph Neural Networks via Node Injections***](https://arxiv.org/abs/2406.03052) as well as our extensions.
 
 <img src="https://github.com/CGCL-codes/NIFA/blob/main/framework.png" alt="Framework of NIFA">
 
@@ -43,8 +43,10 @@ conda env create -f fact.yml
   ```
 
 ## Run the code
+Due to conflicting dependencies, our FairSIN experiments can be run from a separate repository:
+https://github.com/sobek1886/RE-NIFA-FairSIN
 
-The makefile contains targets to run each experiment in the original paper.
+Other than that, the makefile contains targets to run each experiment in the original paper.
 The output of each command will be stored in the `output` directory, and have the same name as the target.
 
 For example, to run the main experiment of the paper, you can run the following command:
